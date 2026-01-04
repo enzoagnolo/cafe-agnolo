@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Loja Caffè Dell'Agnolo</title>
+
+  <meta name="description" content="Caffè Dell'Agnolo — cafés artesanais com identidade, tradição e sabor. De Maringá-PR para o Brasil.">
+
+
+  <link rel="icon" href="foto.png" type="image/png">
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+  <!-- TOP BAR -->
+  <nav class="top-bar">
+    <div class="top-bar-content">
+      <span class="logo">Caffè Dell'Agnolo</span>
+      <div class="top-links">
+        <a href="#sabores">Cafés</a>
+        <a href="#pedidos">Pedidos</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="fade-up">
+    <p>Sejam bem-vindos ao</p>
+    <h1>Caffè Dell'Agnolo</h1>
+    <p>
+      Mais do que café: estilo, sabor e presença em cada xícara.<br>
+      Uma nova marca que nasce com personalidade e transforma o café em uma experiência única.
+    </p>
+  </header>
+
+  <!-- ESSÊNCIA -->
+  <section class="fade-up">
+    <h2 class="section-title">Nossa Essência</h2>
+    <p class="section-text">
+      Caffè Dell'Agnolo nasce da inspiração no passado e da paixão pelo café de qualidade.
+      Cada detalhe é cuidadosamente pensado para proporcionar uma experiência sensorial autêntica,
+      onde tradição, cuidado e identidade própria se encontram.
+      <strong>De Maringá-PR para o Brasil.</strong>
+    </p>
+  </section>
+
+  <!-- SABORES -->
+  <section id="sabores">
+    <h2 class="section-title fade-up">Nossos Sabores de Lançamento</h2>
+
+    <div class="sabores-wrapper fade-up">
+
+      <!-- IMAGEM -->
+      <div class="sabores-image">
+        <img src="cafe-sabores.jpg" alt="Cafés Caffè Dell'Agnolo">
+      </div>
+
+      <!-- CARDS -->
+      <div class="sabores-cards">
+
+        <!-- CARD 1 -->
+        <a 
+           target="_blank"
+           class="card card-link">
+
+          <h3>Café Sabor da Roça</h3>
+          <p>
+            Inspirado no café coado da roça, traz notas terrosas e uma doçura natural,
+            despertando a memória afetiva do café servido no copo americano.
+          </p>
+          <span class="price">R$ 15,00 · 250g</span>
+
+        </a>
+
+        <!-- CARD 2 -->
+        <a 
+           target="_blank"
+           class="card card-link">
+
+          <h3>Café Outono</h3>
+          <p>
+            Notas finas e um aroma envolvente que perfuma o ambiente,
+            com especiarias delicadas e um marcante toque de canela.
+          </p>
+          <span class="price">R$ 15,00 · 250g</span>
+
+        </a>
+
+      </div>
+    </div>
+
+    <!-- TEXTO COMPLEMENTAR -->
+    <div class="text-block fade-up">
+      <p>
+        Da seleção dos grãos ao empacotamento final, todo o processo é feito de forma artesanal,
+        garantindo qualidade, autenticidade e atenção absoluta aos detalhes.
+      </p>
+
+      <p>
+        Mais do que adquirir um café, convidamos você a viver uma experiência completa —
+        do primeiro contato com a marca ao prazer de saborear cada xícara.
+      </p>
+    </div>
+  </section>
+
+  <!-- PEDIDOS -->
+<section id="pedidos" class="fade-up">
+  <h2 class="section-title">Pedidos</h2>
+
+  <p class="section-text">
+    Faça seu pedido diretamente pelo WhatsApp ou acompanhe nosso dia a dia no Instagram:
+  </p>
+
+  <div class="contact-buttons">
+    <a 
+      class="whatsapp" 
+      href="https://wa.me/5544999166089" 
+      target="_blank"
+    >
+      📲 Fazer pedido pelo WhatsApp
+    </a>
+
+    <a 
+      class="instagram" 
+      href="https://instagram.com/cafedellagnolo" 
+      target="_blank"
+    >
+      📸 Siga nossa conta no Instagram
+    </a>
+  </div>
+</section>
+
+  <!-- BOTÃO SCROLL UP -->
+  <button id="scrollTopBtn">↑</button>
+
+  <!-- SCRIPT SCROLL UP -->
+  <script>
+    const scrollBtn = document.getElementById("scrollTopBtn");
+
+    window.addEventListener("scroll", () => {
+      scrollBtn.style.display = window.scrollY > 300 ? "flex" : "none";
+    });
+
+    scrollBtn.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+
+  </script>
+
+</body>
+</html>
