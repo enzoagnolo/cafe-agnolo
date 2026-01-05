@@ -271,3 +271,150 @@ section {
     display: none;
   }
 }
+
+/* ================= MENU MOBILE ================= */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+/* ================= MOBILE AJUSTES ================= */
+@media (max-width: 900px) {
+
+  /* Top bar */
+  .menu-toggle {
+    display: block;
+  }
+
+  .top-links {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(247, 246, 243, 0.97);
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .top-links a {
+    margin: 0.8rem 0;
+    font-size: 1.05rem;
+  }
+
+  .top-links.active {
+    display: flex;
+  }
+
+  /* HERO */
+  header {
+    padding: 6rem 1.5rem 4rem;
+    min-height: auto;
+  }
+
+  header h1 {
+    font-size: 2.4rem;
+  }
+
+  header p {
+    font-size: 1.05rem;
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 4rem 1.5rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .section-text {
+    font-size: 1.05rem;
+    text-align: center;
+  }
+
+  /* ESSÊNCIA */
+  .essencia-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  /* SABORES */
+  .sabores-wrapper {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .card {
+    padding: 2rem 1.8rem;
+  }
+
+  /* BOTÕES */
+  .contact-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-buttons a {
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+  }
+}
+
+/* ================= MENU MOBILE ================= */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: var(--primary);
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .top-links {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 64px);
+    background: rgba(247, 246, 243, 0.97);
+    backdrop-filter: blur(12px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: 2rem;
+
+    transform: translateY(-120%);
+    transition: transform 0.4s ease;
+    z-index: 999;
+  }
+
+  .top-links a {
+    font-size: 1.4rem;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .top-links.active {
+    transform: translateY(0);
+  }
+}
+

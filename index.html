@@ -20,6 +20,12 @@
   <div class="top-bar-content">
     <span class="logo">Caffè Dell'Agnolo</span>
 
+    <!-- BOTÃO MENU MOBILE -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+      ☰
+    </button>
+
+    <!-- LINKS -->
     <div class="top-links" id="topLinks">
       <a href="#essencia">Sobre nós</a>
       <a href="#avisos">Avisos</a>
@@ -110,18 +116,6 @@
       </div>
     </div>
   </div>
-
-  <div class="text-block">
-    <p class="section-text">
-      Da seleção dos grãos ao empacotamento final, todo o processo é feito de forma artesanal,
-      garantindo qualidade e atenção absoluta aos detalhes.
-    </p>
-
-    <p class="section-text">
-      Mais do que adquirir um café, convidamos você a viver uma experiência completa —
-      do primeiro contato com a marca ao prazer de saborear cada xícara.
-    </p>
-  </div>
 </section>
 
 <!-- ================= PEDIDOS ================= -->
@@ -144,11 +138,10 @@
 </section>
 
 <!-- ================= SCROLL TOP ================= -->
-<button id="scrollTopBtn">↑</button>
+<button id="scrollTopBtn" aria-label="Voltar ao topo">↑</button>
 
 <!-- ================= SCRIPT ================= -->
 <script>
-  // MENU MOBILE
   const menuToggle = document.getElementById("menuToggle");
   const topLinks = document.getElementById("topLinks");
 
@@ -162,7 +155,6 @@
     });
   });
 
-  // SCROLL TOP
   const scrollBtn = document.getElementById("scrollTopBtn");
   window.addEventListener("scroll", () => {
     scrollBtn.style.display = window.scrollY > 300 ? "flex" : "none";
@@ -172,7 +164,6 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  // FADE AO ROLAR
   const elements = document.querySelectorAll('.fade-up');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -183,12 +174,6 @@
   }, { threshold: 0.2 });
 
   elements.forEach(el => observer.observe(el));
-
-  // FUNDO HERO SUMINDO AO SCROLL
-  window.addEventListener("scroll", () => {
-    const hero = document.querySelector("header");
-    hero.style.backgroundPositionY = `${window.scrollY * 0.4}px`;
-  });
 </script>
 
 </body>
