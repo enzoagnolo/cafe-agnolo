@@ -417,4 +417,9 @@ section {
     transform: translateY(0);
   }
 }
+.logo {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
 
