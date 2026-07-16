@@ -39,12 +39,15 @@
 
 <!-- ================= HERO ================= -->
 <header class="fade-up">
-  <p>Sejam bem-vindos ao</p>
-  <h1>Caffè Dell'Agnolo</h1>
-  <p>
-    Mais do que café: estilo, sabor e presença em cada xícara.<br>
-    Uma nova marca que nasce com personalidade e transforma o café em uma experiência única.
-  </p>
+  <div class="hero-content">
+    <p class="hero-subtitle">Cafés artesanais com identidade</p>
+    <h1>Caffè Dell'Agnolo</h1>
+    <p class="hero-text">
+      Mais do que café: estilo, sabor e presença em cada xícara.<br>
+      Uma nova marca que nasce com personalidade e transforma o café em uma experiência única.
+    </p>
+    <a href="#sabores" class="hero-button">Descubra nossos sabores</a>
+  </div>
 </header>
 
 <!-- ================= ESSÊNCIA ================= -->
@@ -54,7 +57,7 @@
   <div class="essencia-content">
     <div class="essencia-text">
       <p class="section-text">
-        A família Dell'Agnolo, na década de 1950, deixou a Itália em busca de uma nova vida no Brasil.
+        A família Dell'Agnolo, na década de 1960, deixou a Itália em busca de uma nova vida no Brasil.
          Foi em uma fazenda na cidade de Piraju (SP) que o café entrou pela primeira vez na história da família — 
          e, desde então, transformou-se em uma verdadeira paixão.
       </p>
@@ -108,38 +111,100 @@ resgatar a essência do café feito com cuidado, identidade e história.
 <section id="sabores" class="fade-up">
   <h2 class="section-title">Sabores</h2>
 
-  <div class="sabores-wrapper">
-    <div class="sabores-image">
-      <img src="cafe-sabores.jpg" alt="Cafés Caffè Dell'Agnolo">
-    </div>
+  <div class="sabores-lista">
+    <article class="produto-card">
+      <img class="produto-image" src="cafe-sabores.jpg" alt="Café Sabor da Roça">
 
-    <div class="sabores-cards">
-      <div class="card">
-        <h3>Café Sabor da Roça</h3>
-        <p>
-          Inspirado no tradicional café coado da roça, apresenta intensidade marcante, notas terrosas 
-          e uma doçura natural que remete à memória afetiva do café servido no clássico copo americano.
+      <div class="produto-content">
+        <div class="produto-header">
+          <h3>Café em Grãos</h3>
+          <span class="produto-tag">Lançamento</span>
+        </div>
+
+        <p class="produto-desc">
+          Ideal para quem prefere moer o café na hora, preservando o aroma, o frescor e o sabor em cada preparo.
         </p>
-        <h5>
-        <p class="old-price">R$ 32,90 </p> <p> Lote inaugural com valor especial de lançamento. Produção limitada.</p>
-        </h5>
-        <span class="price">R$ 29,90 · 250g</span>
-      </div>
 
-      <div class="card">
-        <h3>Café Outono</h3>
-        <p>
-          Com nota de topo marcante de canela e um mix de especiarias, este café saborizado entrega um 
-          sabor envolvente e presente, ideal para quem busca um café para todas as horas, 
-          com personalidade e intensidade na medida certa.
+        <button class="produto-toggle" type="button" aria-expanded="false">Ver características</button>
+
+        <div class="produto-detalhes" hidden>
+          <ul class="produto-caracteristicas">
+            <li>Grãos inteiros de alta qualidade</li>
+            <li>Maior preservação de aroma e sabor</li>
+            <li>Ideal para moagem na hora</li>
+            <li>Perfeito para coados, espresso e métodos especiais</li>
+          </ul>
+        </div>
+
+        <div class="produto-precos">
+          <span class="old-price">R$ 34,90</span>
+          <span class="price">R$ 29,90</span>
+          <span class="produto-tamanho">250g</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="produto-card">
+      <img class="produto-image" src="cafe-sabores.jpg" alt="Café Sabor da Roça">
+
+      <div class="produto-content">
+        <div class="produto-header">
+          <h3>Café Sabor da Roça</h3>
+          <span class="produto-tag">Lançamento</span>
+        </div>
+
+        <p class="produto-desc">
+          Inspirado no café coado da roça, com intensidade marcante, notas terrosas e uma doçura natural.
         </p>
-        <h5>
-        <p class="old-price">R$ 34,90</p> <p> Lote inaugural com valor especial de lançamento. Produção limitada.</p>
-        </h5>
-        <span class="price">R$ 32,90 · 250g</span>
-      </div>
 
-    </div>
+        <button class="produto-toggle" type="button" aria-expanded="false">Ver características</button>
+
+        <div class="produto-detalhes" hidden>
+          <ul class="produto-caracteristicas">
+            <li>Perfil tradicional e encorpado</li>
+            <li>Notas de terra e sabor marcante</li>
+            <li>Ideal para quem gosta de café com personalidade</li>
+          </ul>
+        </div>
+
+        <div class="produto-precos">
+          <span class="old-price">R$ 32,90</span>
+          <span class="price">R$ 29,90</span>
+          <span class="produto-tamanho">250g</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="produto-card">
+      <img class="produto-image" src="cafe-sabores.jpg" alt="Café Outono">
+
+      <div class="produto-content">
+        <div class="produto-header">
+          <h3>Café Outono</h3>
+          <span class="produto-tag">Edição especial</span>
+        </div>
+
+        <p class="produto-desc">
+          Com notas de canela e especiarias, oferece um sabor envolvente e sofisticado para todas as horas.
+        </p>
+
+        <button class="produto-toggle" type="button" aria-expanded="false">Ver características</button>
+
+        <div class="produto-detalhes" hidden>
+          <ul class="produto-caracteristicas">
+            <li>Aromas quentes e acolhedores</li>
+            <li>Equilíbrio entre intensidade e suavidade</li>
+            <li>Perfeito para acompanhar o dia</li>
+          </ul>
+        </div>
+
+        <div class="produto-precos">
+          <span class="old-price">R$ 34,90</span>
+          <span class="price">R$ 32,90</span>
+          <span class="produto-tamanho">250g</span>
+        </div>
+      </div>
+    </article>
   </div>
 </section>
 <!-- ================= PEDIDOS ================= -->
@@ -152,11 +217,11 @@ resgatar a essência do café feito com cuidado, identidade e história.
 
   <div class="contact-buttons">
     <a class="whatsapp" href="https://wa.me/5544999166089" target="_blank">
-      📲 Fazer pedido pelo WhatsApp
+      Faça seu pedido pelo WhatsApp
     </a>
 
     <a class="instagram" href="https://instagram.com/cafedellagnolo" target="_blank">
-      📸 Siga no Instagram
+      Siga nosso Instagram
     </a>
   </div>
 </section>
@@ -164,41 +229,6 @@ resgatar a essência do café feito com cuidado, identidade e história.
 <!-- ================= SCROLL TOP ================= -->
 <button id="scrollTopBtn" aria-label="Voltar ao topo">↑</button>
 
-<!-- ================= SCRIPT ================= -->
-<script>
-  const menuToggle = document.getElementById("menuToggle");
-  const topLinks = document.getElementById("topLinks");
-
-  menuToggle.addEventListener("click", () => {
-    topLinks.classList.toggle("active");
-  });
-
-  document.querySelectorAll(".top-links a").forEach(link => {
-    link.addEventListener("click", () => {
-      topLinks.classList.remove("active");
-    });
-  });
-
-  const scrollBtn = document.getElementById("scrollTopBtn");
-  window.addEventListener("scroll", () => {
-    scrollBtn.style.display = window.scrollY > 300 ? "flex" : "none";
-  });
-
-  scrollBtn.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
-  const elements = document.querySelectorAll('.fade-up');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.2 });
-
-  elements.forEach(el => observer.observe(el));
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
