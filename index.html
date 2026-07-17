@@ -34,6 +34,13 @@
       <a href="#sabores">Sabores</a>
       <a href="#pedidos">Pedidos</a>
     </div>
+
+    <button class="cart-trigger" id="cartTrigger" type="button" aria-label="Abrir carrinho" aria-expanded="false">
+      Carrinho <span id="cartCount" class="cart-count">0</span>
+    </button>
+    <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Abrir perfil" aria-expanded="false">Perfil</button>
+    <button class="login-trigger" id="loginTrigger" type="button" aria-label="Criar cadastro">Log-in</button>
+    <span class="user-greeting" id="userGreeting" hidden></span>
   </div>
 </nav>
 
@@ -141,6 +148,11 @@ resgatar a essência do café feito com cuidado, identidade e história.
           <span class="price">R$ 29,90</span>
           <span class="produto-tamanho">250g</span>
         </div>
+
+        <div class="produto-acoes">
+          <button class="add-cart" type="button">Adicionar ao carrinho</button>
+          <button class="buy-now" type="button">Comprar</button>
+        </div>
       </div>
     </article>
 
@@ -171,6 +183,11 @@ resgatar a essência do café feito com cuidado, identidade e história.
           <span class="old-price">R$ 32,90</span>
           <span class="price">R$ 29,90</span>
           <span class="produto-tamanho">250g</span>
+        </div>
+
+        <div class="produto-acoes">
+          <button class="add-cart" type="button">Adicionar ao carrinho</button>
+          <button class="buy-now" type="button">Comprar</button>
         </div>
       </div>
     </article>
@@ -203,6 +220,11 @@ resgatar a essência do café feito com cuidado, identidade e história.
           <span class="price">R$ 32,90</span>
           <span class="produto-tamanho">250g</span>
         </div>
+
+        <div class="produto-acoes">
+          <button class="add-cart" type="button">Adicionar ao carrinho</button>
+          <button class="buy-now" type="button">Comprar</button>
+        </div>
       </div>
     </article>
   </div>
@@ -228,6 +250,77 @@ resgatar a essência do café feito com cuidado, identidade e história.
 
 <!-- ================= SCROLL TOP ================= -->
 <button id="scrollTopBtn" aria-label="Voltar ao topo">↑</button>
+
+<div class="cart-overlay" id="cartOverlay" hidden></div>
+<aside class="cart-modal" id="cartModal" aria-labelledby="cartTitle" aria-hidden="true">
+  <div class="cart-header">
+    <h2 id="cartTitle">Seu carrinho</h2>
+    <button class="cart-close" id="cartClose" type="button" aria-label="Fechar carrinho">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <p class="cart-total">Total: <strong id="cartTotal">R$ 0,00</strong></p>
+    <button class="cart-checkout" id="cartCheckout" type="button">Finalizar pedido</button>
+  </div>
+
+</aside>
+
+<aside class="profile-modal" id="profileModal" aria-labelledby="profileTitle" aria-hidden="true">
+  <div class="cart-header">
+    <h2 id="profileTitle">Meu perfil</h2>
+    <button class="cart-close" id="profileClose" type="button" aria-label="Fechar perfil">&times;</button>
+  </div>
+  <div class="profile-content">
+    <section>
+      <h3>Meus dados</h3>
+      <div id="profileDetails"></div>
+    </section>
+    <section>
+      <h3>Pedidos realizados</h3>
+      <div id="orderHistory"></div>
+    </section>
+  </div>
+</aside>
+
+<div class="registration-overlay" id="registrationOverlay" hidden>
+  <form class="checkout-form" id="checkoutForm" aria-labelledby="registrationTitle">
+    <div class="registration-header">
+      <h3 id="registrationTitle">Complete seu cadastro</h3>
+      <button class="registration-close" id="registrationClose" type="button" aria-label="Fechar cadastro">×</button>
+    </div>
+    <p>Precisamos destes dados para registrar seu pedido.</p>
+
+    <label>Nome completo
+      <input id="customerName" name="name" type="text" autocomplete="name" required>
+    </label>
+    <label>Telefone para contato
+      <input id="customerPhone" name="phone" type="tel" autocomplete="tel" required>
+    </label>
+    <label>CEP
+      <input id="customerCep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" required>
+    </label>
+    <label>E-mail
+      <input id="customerEmail" name="email" type="email" autocomplete="email" required>
+    </label>
+    <label>Endereço completo
+      <textarea id="customerAddress" name="address" autocomplete="street-address" required></textarea>
+    </label>
+
+    <button type="submit">Salvar e continuar</button>
+    <button class="skip-registration" id="skipRegistration" type="button">Continuar sem cadastro</button>
+  </form>
+</div>
+
+<div class="purchase-choice-overlay" id="purchaseChoiceOverlay" hidden>
+  <div class="purchase-choice" role="dialog" aria-modal="true" aria-labelledby="purchaseChoiceTitle">
+    <h2 id="purchaseChoiceTitle">Produto adicionado ao carrinho</h2>
+    <p>Deseja finalizar a compra agora ou continuar comprando?</p>
+    <div class="purchase-choice-actions">
+      <button class="purchase-finish" id="purchaseFinish" type="button">Finalizar compra</button>
+      <button class="purchase-continue" id="purchaseContinue" type="button">Continuar comprando</button>
+    </div>
+  </div>
+</div>
 
 <script src="script.js"></script>
 </body>
