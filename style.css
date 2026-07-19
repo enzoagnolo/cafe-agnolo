@@ -192,8 +192,12 @@ header h1 {
 
 /* ================= SECTIONS ================= */
 section {
-  padding: 6rem 8vw;
+  padding: clamp(3.5rem, 6vw, 6rem) clamp(1.25rem, 5vw, 8vw);
 }
+
+
+
+
 
 .section-title {
   font-family: 'Playfair Display', serif;
@@ -623,6 +627,53 @@ section {
 .purchase-finish { border: none; background: #1c1c1c; color: #fff; }
 .purchase-continue { border: 1px solid rgba(28, 28, 28, 0.25); background: transparent; color: var(--primary); }
 
+/* ================= PURCHASE SUCCESS POPUP ================= */
+.success-overlay {
+  position: fixed;
+  z-index: 1300;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.success-overlay[hidden] {
+  display: none;
+}
+
+.success-modal {
+  width: min(100%, 520px);
+  background: #fffdf9;
+  border-radius: 18px;
+  padding: 1.8rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(140, 107, 63, 0.22);
+  text-align: center;
+}
+
+.success-modal h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.success-modal p {
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+}
+
+.success-actions button {
+  border: none;
+  background: #1c1c1c;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.85rem 1.2rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .checkout-form {
   width: min(100%, 520px);
   max-height: calc(100vh - 3rem);
@@ -632,6 +683,92 @@ section {
   background: #fffdf9;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
 }
+
+/* ================= PAYMENT FINALIZATION MODAL (igual ao cart) ================= */
+.payment-finalization-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  z-index: 1205;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.payment-finalization-overlay[hidden] {
+  display: none;
+}
+
+.payment-finalization-modal {
+  width: min(calc(100% - 2rem), 560px);
+  min-height: 440px;
+  max-height: calc(100vh - 2rem);
+  padding: 2rem;
+  background: linear-gradient(145deg, #fffefb 0%, #f7f1e7 100%);
+  border: 1px solid rgba(140, 107, 63, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+}
+
+.payment-finalization-overlay:not([hidden]) .payment-finalization-modal {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.payment-summary {
+  width: 100%;
+}
+
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(28, 28, 28, 0.08);
+}
+
+.payment-row:last-child {
+  border-bottom: none;
+}
+
+.payment-note {
+  color: var(--muted);
+}
+
+.payment-actions {
+  width: 100%;
+}
+
+.payment-secondary-actions {
+  width: 100%;
+}
+
+.payment-edit {
+  width: 100%;
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(28, 28, 28, 0.25);
+  background: transparent;
+  color: var(--primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.payment-edit:hover {
+  transform: translateY(-2px);
+  background: rgba(239, 227, 207, 0.35);
+}
+
+
 
 .registration-header {
   display: flex;
@@ -886,6 +1023,102 @@ section {
 
   .top-links.active {
     transform: translateY(0);
+  }
+}
+
+/* ================= EXTRA SMALL ================= */
+@media (max-width: 480px) {
+  header {
+    padding: 5.5rem 1rem 3.5rem;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-text {
+    font-size: 1.02rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-text {
+    font-size: 1.02rem;
+    max-width: 100%;
+  }
+
+  .produto-header {
+    gap: 0.6rem;
+  }
+
+  .produto-header h3 {
+    font-size: 1.15rem;
+  }
+
+  .produto-acoes {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-modal {
+    padding: 1.2rem;
+    min-height: auto;
+    transform: translate(-50%, -45%);
+  }
+
+  .cart-item {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .cart-quantity {
+    justify-content: space-between;
+  }
+
+  .profile-modal {
+    width: min(100%, 100%);
+  }
+
+  .profile-content {
+    padding-top: 1rem;
+    gap: 1.2rem;
+  }
+
+  .cart-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .payment-finalization-modal {
+    padding: 1.3rem;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  header {
+    padding: 5rem 0.9rem 3.2rem;
+  }
+
+  .cart-trigger,
+  .profile-trigger {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .cart-count {
+    min-width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .produto-toggle {
+    width: 100%;
+  }
+
+  .cart-checkout,
+  .payment-edit {
+    padding: 0.75rem 0.9rem;
   }
 }
 .logo {

@@ -31,15 +31,18 @@
     <div class="top-links" id="topLinks">
       <a href="#essencia">Sobre nós</a>
       <a href="#avisos">Avisos</a>
-      <a href="#sabores">Sabores</a>
-      <a href="#pedidos">Pedidos</a>
+      <a href="#sabores">Produtos</a>
+      <a href="#duvidas">Dúvida?</a>
     </div>
 
     <button class="cart-trigger" id="cartTrigger" type="button" aria-label="Abrir carrinho" aria-expanded="false">
       Carrinho <span id="cartCount" class="cart-count">0</span>
     </button>
-    <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Abrir perfil" aria-expanded="false">Perfil</button>
-    <button class="login-trigger" id="loginTrigger" type="button" aria-label="Criar cadastro">Log-in</button>
+    <button class="login-trigger" id="profileTrigger" type="button" aria-label="Abrir perfil / Log-in" aria-expanded="false">Log-in</button>
+
+
+
+
     <span class="user-greeting" id="userGreeting" hidden></span>
   </div>
 </nav>
@@ -53,9 +56,11 @@
       Mais do que café: estilo, sabor e presença em cada xícara.<br>
       Uma nova marca que nasce com personalidade e transforma o café em uma experiência única.
     </p>
-    <a href="#sabores" class="hero-button">Descubra nossos sabores</a>
+
+    <a href="#sabores" class="hero-button" id="heroProductsButton">Conheça nossos produtos</a>
   </div>
 </header>
+
 
 <!-- ================= ESSÊNCIA ================= -->
 <section id="essencia" class="fade-up">
@@ -65,23 +70,27 @@
     <div class="essencia-text">
       <p class="section-text">
         A família Dell'Agnolo, na década de 1960, deixou a Itália em busca de uma nova vida no Brasil.
-         Foi em uma fazenda na cidade de Piraju (SP) que o café entrou pela primeira vez na história da família — 
-         e, desde então, transformou-se em uma verdadeira paixão.
+        Foi em uma fazenda na cidade de Piraju (SP) que o café entrou pela primeira vez na história da família — 
+        e, desde então, transformou-se em uma verdadeira paixão.
       </p>
 
       <p class="section-text">
-        Anos depois, já em Maringá (PR), a família fundou uma torrefação artesanal na região onde hoje se encontra a praça da Avenida Rocha Pombo, 
+        Anos depois, já em Maringá (PR), a família fundou uma torrefação artesanal na região onde hoje se encontra a praça da Avenida Rocha Pombo,
         conhecida na época como Café Camor.
       </p>
 
       <p class="section-text">
-        Com o passar do tempo, este capítulo foi encerrado.
+        Por muitos anos, o cheiro do café torrando virou parte da rotina: um convite para reunir pessoas, contar histórias e
+        celebrar o momento do preparo com cuidado em cada etapa.
       </p>
 
       <p class="section-text">
-E hoje, o Caffè Dell’Agnolo nasce inspirado nessa trajetória familiar, 
-trazendo de volta esse legado com um novo propósito: 
-resgatar a essência do café feito com cuidado, identidade e história.
+        Com o passar do tempo, esse capítulo foi encerrado.
+      </p>
+
+      <p class="section-text">
+        E hoje, o Caffè Dell’Agnolo nasce inspirado nessa trajetória familiar, trazendo de volta esse legado com um novo propósito:
+        resgatar a essência do café feito com identidade, cuidado e história.
       </p>
 
       <p class="section-text">
@@ -90,6 +99,7 @@ resgatar a essência do café feito com cuidado, identidade e história.
         onde tradição, qualidade e personalidade se encontram em cada xícara.
         <strong>De Maringá-PR para o Brasil.</strong>
       </p>
+
     </div>
   </div>
 </section>
@@ -100,23 +110,24 @@ resgatar a essência do café feito com cuidado, identidade e história.
 
   <p class="section-text">
     Estamos em fase de desenvolvimento e, neste início, nossos pedidos são realizados diretamente
-    pelo WhatsApp ou Instagram, com pagamento <strong>exclusivamente via Pix</strong>.
+    pelo WhatsApp ou Instagram — com pagamento <strong>exclusivamente via Pix</strong>.
   </p>
 
   <p class="section-text">
     Após a confirmação da compra, cuidamos de cada detalhe com atenção e mantemos você informado
-    sobre todas as etapas da entrega.
+    sobre todas as etapas da entrega, desde a separação até a finalização do pedido.
   </p>
 
   <p class="section-text">
-    Em breve, traremos melhorias para tornar a experiência em nosso site cada vez mais completa.
-    Desde já, agradecemos a confiança e a parceria.
+    Em breve, traremos melhorias para tornar a experiência em nosso site ainda mais completa.
+    Até lá, agradecemos pela confiança e pela parceria.
   </p>
+
 </section>
 
-<!-- ================= SABORES ================= -->
+<!-- ================= PRODUTOS ================= -->
 <section id="sabores" class="fade-up">
-  <h2 class="section-title">Sabores</h2>
+  <h2 class="section-title">Produtos</h2>
 
   <div class="sabores-lista">
     <article class="produto-card">
@@ -229,17 +240,17 @@ resgatar a essência do café feito com cuidado, identidade e história.
     </article>
   </div>
 </section>
-<!-- ================= PEDIDOS ================= -->
-<section id="pedidos" class="fade-up">
-  <h2 class="section-title">Pedidos</h2>
+<!-- ================= DUVIDAS ================= -->
+<section id="duvidas" class="fade-up">
+  <h2 class="section-title">Dúvidas</h2>
 
   <p class="section-text">
-    Faça seu pedido diretamente pelo WhatsApp ou acompanhe nosso dia a dia no Instagram:
+    Ficou alguma dúvida? Entre em contato conosco pelo WhatsApp e siga nossa página para acompanhar nosso dia-dia pelo Instagram:
   </p>
 
   <div class="contact-buttons">
     <a class="whatsapp" href="https://wa.me/5544999166089" target="_blank">
-      Faça seu pedido pelo WhatsApp
+      Entre em contato pelo WhatsApp
     </a>
 
     <a class="instagram" href="https://instagram.com/cafedellagnolo" target="_blank">
@@ -314,14 +325,116 @@ resgatar a essência do café feito com cuidado, identidade e história.
 <div class="purchase-choice-overlay" id="purchaseChoiceOverlay" hidden>
   <div class="purchase-choice" role="dialog" aria-modal="true" aria-labelledby="purchaseChoiceTitle">
     <h2 id="purchaseChoiceTitle">Produto adicionado ao carrinho</h2>
-    <p>Deseja finalizar a compra agora ou continuar comprando?</p>
+<p>Você quer finalizar o pagamento agora ou continuar comprando?</p>
+
     <div class="purchase-choice-actions">
       <button class="purchase-finish" id="purchaseFinish" type="button">Finalizar compra</button>
       <button class="purchase-continue" id="purchaseContinue" type="button">Continuar comprando</button>
     </div>
   </div>
+
+</div>
+
+<!-- ================= PAYMENT FINALIZATION MODAL ================= -->
+<div class="payment-finalization-overlay" id="paymentFinalizationOverlay" hidden>
+  <div class="payment-finalization-modal" role="dialog" aria-modal="true" aria-labelledby="paymentFinalizationTitle">
+    <div class="cart-header">
+      <h2 id="paymentFinalizationTitle">Concluir pagamento</h2>
+      <button class="cart-close" id="paymentFinalizationClose" type="button" aria-label="Fechar pagamento">×</button>
+    </div>
+
+    <div class="payment-summary" aria-live="polite" style="margin-top: 1rem;">
+      <div class="payment-row">
+        <span>Subtotal</span>
+        <strong id="paymentSubtotal">R$ 0,00</strong>
+      </div>
+      <div class="payment-row">
+        <span>Frete</span>
+        <strong id="paymentShipping">R$ 0,00</strong>
+      </div>
+      <div class="payment-row payment-total">
+        <span>Total</span>
+        <strong id="paymentTotal">R$ 0,00</strong>
+      </div>
+    </div>
+
+    <p class="payment-note" style="margin-top: 0.8rem; color: var(--muted);">
+      O frete é estimado com base em referência. Finalize o pedido e confirme o endereço.
+    </p>
+
+    <div class="payment-note" style="margin-top: 0.9rem;">
+      <strong>Forma de pagamento:</strong>
+      <div style="margin-top: 0.35rem; color: var(--muted);">Pix</div>
+    </div>
+
+    <div class="payment-actions" style="margin-top: 1.2rem;">
+      <button class="cart-checkout" id="paymentFinalizationConfirm" type="button">Confirmar e finalizar pedido</button>
+    </div>
+
+    <div class="payment-secondary-actions" style="margin-top: 0.75rem;">
+      <button class="payment-edit" id="paymentFinalizationEdit" type="button">
+        Editar cadastro (CEP/endereço)
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= PIX QR MODAL ================= -->
+<div class="payment-finalization-overlay" id="pixPaymentOverlay" hidden>
+  <div class="payment-finalization-modal" role="dialog" aria-modal="true" aria-labelledby="pixPaymentTitle">
+    <div class="cart-header">
+      <h2 id="pixPaymentTitle">Pagamento via Pix</h2>
+      <button class="cart-close" id="pixPaymentClose" type="button" aria-label="Voltar">←</button>
+
+    </div>
+
+    <div class="payment-summary" aria-live="polite" style="margin-top: 1rem;">
+      <div class="payment-row">
+        <span>Total</span>
+        <strong id="pixPaymentTotal">R$ 0,00</strong>
+      </div>
+    </div>
+
+    <p class="payment-note" style="margin-top: 0.8rem; color: var(--muted);">
+      Escaneie o QR Code abaixo para realizar o pagamento.
+    </p>
+
+    <div style="margin-top: 1.2rem; display: grid; gap: 0.9rem; place-items: center;">
+      <div style="width: 220px; height: 220px; background: #ffffff; border-radius: 16px; border: 1px solid rgba(28, 28, 28, 0.12); display: grid; place-items: center; overflow: hidden;">
+        <img id="pixQrImage" alt="QR Code Pix" style="width: 180px; height: 180px; object-fit: contain;" />
+      </div>
+
+      <div style="width: 100%; max-width: 420px;">
+        <p style="color: var(--muted); font-size: 0.92rem;">Se não conseguir escanear, copie o código Pix:</p>
+        <div style="margin-top: 0.5rem; padding: 0.8rem; border-radius: 12px; background: rgba(239, 227, 207, 0.35); border: 1px dashed rgba(28,28,28,0.2); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 0.85rem; word-break: break-word;" id="pixCopyCode">COPIAR_PIX_AQUI</div>
+        <button class="payment-edit" id="pixCopyButton" type="button" style="margin-top: 0.85rem;">Copiar código Pix</button>
+      </div>
+    </div>
+
+    <div class="payment-actions" style="margin-top: 1.5rem;">
+      <button class="cart-checkout" id="pixPaymentDone" type="button">Já paguei</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ================= PURCHASE SUCCESS POPUP ================= -->
+<div class="success-overlay" id="successOverlay" hidden>
+
+
+  <div class="success-modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+
+    <h2 id="successTitle">Compra realizada com sucesso! \uD83C\uDF89</h2>
+    <p id="successMessage">Obrigado pela sua compra.</p>
+    <div class="success-actions">
+      <button id="successClose" type="button">Fechar</button>
+    </div>
+  </div>
 </div>
 
 <script src="script.js"></script>
+
 </body>
 </html>
