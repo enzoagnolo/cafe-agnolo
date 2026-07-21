@@ -32,7 +32,7 @@
       <a href="#essencia">Sobre nós</a>
       <a href="#avisos">Avisos</a>
       <a href="#sabores">Produtos</a>
-      <a href="#duvidas">Dúvida?</a>
+      <a href="#parceiros">Parceiros</a>
     </div>
 
     <button class="cart-trigger" id="cartTrigger" type="button" aria-label="Abrir carrinho" aria-expanded="false">
@@ -240,22 +240,51 @@
     </article>
   </div>
 </section>
-<!-- ================= DUVIDAS ================= -->
-<section id="duvidas" class="fade-up">
-  <h2 class="section-title">Dúvidas</h2>
+<!-- ================= PARCEIROS ================= -->
+<section id="parceiros" class="fade-up">
+  <h2 class="section-title">Parceiros</h2>
 
-  <p class="section-text">
-    Ficou alguma dúvida? Entre em contato conosco pelo WhatsApp e siga nossa página para acompanhar nosso dia-dia pelo Instagram:
-  </p>
+  <div class="carousel-container">
+    <div class="carousel-track" id="carouselTrack">
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 1">
+        <h3>Empresa 1</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 2">
+        <h3>Empresa 2</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 3">
+        <h3>Empresa 3</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 4">
+        <h3>Empresa 4</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+    </div>
 
-  <div class="contact-buttons">
-    <a class="whatsapp" href="https://wa.me/5544999166089" target="_blank">
-      Entre em contato pelo WhatsApp
-    </a>
+    <button class="carousel-btn prev" id="carouselPrev" type="button" aria-label="Slide anterior">‹</button>
+    <button class="carousel-btn next" id="carouselNext" type="button" aria-label="Próximo slide">›</button>
+  </div>
 
-    <a class="instagram" href="https://instagram.com/cafedellagnolo" target="_blank">
-      Siga nosso Instagram
-    </a>
+  <div class="carousel-dots" id="carouselDots"></div>
+
+  <div class="parceiros-cta">
+    <h3>Seja um parceiro também!!!</h3>
+    <p>Entre em contato conosco pelo WhatsApp ou pelo nosso Instagram</p>
+    <div class="contact-buttons">
+      <a class="whatsapp" href="https://wa.me/5544999166089" target="_blank">
+        Entre em contato pelo WhatsApp
+      </a>
+      <a class="instagram" href="https://instagram.com/cafedellagnolo" target="_blank">
+        Siga nosso Instagram
+      </a>
+    </div>
   </div>
 </section>
 
@@ -433,6 +462,40 @@
     </div>
   </div>
 </div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-brand">
+      <h3>Caffè Dell'Agnolo</h3>
+      <p>Cafés artesanais com identidade, tradição e sabor.</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Navegação</h4>
+      <a href="#essencia">Sobre nós</a>
+      <a href="#avisos">Avisos</a>
+      <a href="#sabores">Produtos</a>
+      <a href="#parceiros">Parceiros</a>
+    </div>
+
+    <div class="footer-contact">
+      <h4>Contato</h4>
+      <a href="https://wa.me/5544999166089" target="_blank">WhatsApp</a>
+      <a href="https://instagram.com/cafedellagnolo" target="_blank">Instagram</a>
+      <a href="mailto:cafedellagnolo@gmail.com">E-mail</a>
+    </div>
+
+    <div class="footer-location">
+      <h4>Localização</h4>
+      <p>Maringá-PR, Brasil</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© <span id="footerYear"></span> Caffè Dell'Agnolo. Todos os direitos reservados.</p>
+  </div>
+</footer>
 
 <script src="script.js"></script>
 
