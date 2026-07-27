@@ -9,6 +9,7 @@ if (footerYear) {
 }
 
 
+const heroProductsButton = document.getElementById('heroProductsButton');
 const scrollTopButton = document.getElementById('scrollTopBtn');
 
 if (scrollTopButton) {
@@ -133,6 +134,8 @@ const purchaseFinish = document.getElementById('purchaseFinish');
 const purchaseContinue = document.getElementById('purchaseContinue');
 const successOverlay = document.getElementById('successOverlay');
 const successClose = document.getElementById('successClose');
+
+
 
 
 
@@ -640,9 +643,7 @@ checkoutForm.addEventListener('submit', async (event) => {
     return;
   }
 
-  const orderItems = cart
-    .map((item) => `${item.name} (${item.size}) — ${item.price}`)
-    .join('\n');
+
 
   submitButton.disabled = true;
   submitButton.textContent = 'Enviando pedido...';
@@ -831,175 +832,26 @@ document.querySelectorAll('.buy-now').forEach((button) => {
   });
 });
 
-// ================= CARROSSEL PARCEIROS =================
-const carouselTrack = document.getElementById('carouselTrack');
-const carouselPrev = document.getElementById('carouselPrev');
-const carouselNext = document.getElementById('carouselNext');
-const carouselDots = document.getElementById('carouselDots');
+// ================= FADE UP ANIMATION =================
+const fadeElements = document.querySelectorAll('.fade-up');
 
-if (carouselTrack) {
-  const slides = carouselTrack.querySelectorAll('.carousel-slide');
-  const totalSlides = slides.length;
-  let currentIndex = 0;
-  let autoPlayTimer = null;
-  let isDragging = false;
-  let startPos = 0;
-  let currentTranslate = 0;
-  let prevTranslate = 0;
-  let animationID = 0;
-
-  // Criar dots
-  for (let i = 0; i < totalSlides; i++) {
-    const dot = document.createElement('button');
-    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-    dot.type = 'button';
-    dot.setAttribute('aria-label', `Ir para slide ${i + 1}`);
-    dot.dataset.index = i;
-    carouselDots.appendChild(dot);
-  }
-
-  const dots = carouselDots.querySelectorAll('.carousel-dot');
-
-  const goToSlide = (index) => {
-    if (index < 0) index = totalSlides - 1;
-    if (index >= totalSlides) index = 0;
-    currentIndex = index;
-
-    carouselTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
-    prevTranslate = -currentIndex * carouselTrack.clientWidth;
-
-    dots.forEach((d, i) => {
-      d.classList.toggle('active', i === currentIndex);
-    });
-  };
-
-  const nextSlide = () => goToSlide(currentIndex + 1);
-  const prevSlide = () => goToSlide(currentIndex - 1);
-
-  // Eventos das setas
-  if (carouselNext) carouselNext.addEventListener('click', nextSlide);
-  if (carouselPrev) carouselPrev.addEventListener('click', prevSlide);
-
-  // Eventos dos dots
-  dots.forEach((dot) => {
-    dot.addEventListener('click', () => {
-      goToSlide(Number(dot.dataset.index));
-      resetAutoPlay();
-    });
-  });
-
-  // ================= DRAG / SWIPE =================
-  const carouselContainer = document.querySelector('.carousel-container');
-  const trackWidth = () => carouselTrack.clientWidth;
-
-  const setPositionByIndex = () => {
-    currentTranslate = -currentIndex * trackWidth();
-    prevTranslate = currentTranslate;
-    carouselTrack.style.transform = `translateX(${currentTranslate}px)`;
-    carouselTrack.style.transition = 'transform 0.5s ease';
-  };
-
-  const touchStart = (clientX) => {
-    if (autoPlayTimer) stopAutoPlay();
-    isDragging = true;
-    startPos = clientX;
-    currentTranslate = -currentIndex * trackWidth();
-    prevTranslate = currentTranslate;
-    carouselTrack.style.transition = 'none';
-    animationID = requestAnimationFrame(animation);
-  };
-
-  const touchMove = (clientX) => {
-    if (!isDragging) return;
-    const currentPosition = clientX;
-    const diff = currentPosition - startPos;
-    currentTranslate = prevTranslate + diff;
-    carouselTrack.style.transform = `translateX(${currentTranslate}px)`;
-  };
-
-  const touchEnd = () => {
-    if (!isDragging) return;
-    isDragging = false;
-    cancelAnimationFrame(animationID);
-
-    const movedBy = currentTranslate - prevTranslate;
-    const threshold = trackWidth() * 0.2;
-
-    if (Math.abs(movedBy) > threshold) {
-      if (movedBy < 0) {
-        goToSlide(currentIndex + 1);
-      } else {
-        goToSlide(currentIndex - 1);
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
       }
-    } else {
-      setPositionByIndex();
-    }
+    });
+  }, { threshold: 0.15 });
 
-    if (autoPlayTimer === null) startAutoPlay();
-  };
-
-  const animation = () => {
-    if (isDragging) {
-      carouselTrack.style.transform = `translateX(${currentTranslate}px)`;
-      animationID = requestAnimationFrame(animation);
-    }
-  };
-
-  // Eventos de mouse
-  carouselTrack.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    touchStart(e.clientX);
-  });
-
-  carouselTrack.addEventListener('mousemove', (e) => {
-    e.preventDefault();
-    touchMove(e.clientX);
-  });
-
-  carouselTrack.addEventListener('mouseup', touchEnd);
-  carouselTrack.addEventListener('mouseleave', touchEnd);
-
-  // Eventos de toque (mobile)
-  carouselTrack.addEventListener('touchstart', (e) => {
-    touchStart(e.touches[0].clientX);
-  }, { passive: true });
-
-  carouselTrack.addEventListener('touchmove', (e) => {
-    touchMove(e.touches[0].clientX);
-  }, { passive: true });
-
-  carouselTrack.addEventListener('touchend', touchEnd);
-  carouselTrack.addEventListener('touchcancel', touchEnd);
-
-  // Evitar arrasto de imagens dentro do carrossel
-  carouselTrack.querySelectorAll('img').forEach((img) => {
-    img.addEventListener('dragstart', (e) => e.preventDefault());
-  });
-
-  // Pausar/retomar auto-play no hover
-  if (carouselContainer) {
-    carouselContainer.addEventListener('mouseenter', stopAutoPlay);
-    carouselContainer.addEventListener('mouseleave', startAutoPlay);
-  }
-
-  // Iniciar auto-play
-  const startAutoPlay = () => {
-    stopAutoPlay();
-    autoPlayTimer = setInterval(nextSlide, 4000);
-  };
-
-  const stopAutoPlay = () => {
-    if (autoPlayTimer) {
-      clearInterval(autoPlayTimer);
-      autoPlayTimer = null;
-    }
-  };
-
-  const resetAutoPlay = () => {
-    startAutoPlay();
-  };
-
-  startAutoPlay();
+  fadeElements.forEach((el) => observer.observe(el));
+} else {
+  // Fallback for older browsers
+  fadeElements.forEach((el) => el.classList.add('is-visible'));
 }
+
+// ================= CARROSSEL PARCEIROS =================
+// O carrossel funciona via animação CSS (esteiraMovimento) no .carousel-track
 
 

@@ -40,9 +40,6 @@
     </button>
     <button class="login-trigger" id="profileTrigger" type="button" aria-label="Abrir perfil / Log-in" aria-expanded="false">Log-in</button>
 
-
-
-
     <span class="user-greeting" id="userGreeting" hidden></span>
   </div>
 </nav>
@@ -60,7 +57,6 @@
     <a href="#sabores" class="hero-button" id="heroProductsButton">Conheça nossos produtos</a>
   </div>
 </header>
-
 
 <!-- ================= ESSÊNCIA ================= -->
 <section id="essencia" class="fade-up">
@@ -246,6 +242,28 @@
 
   <div class="carousel-container">
     <div class="carousel-track" id="carouselTrack">
+      <!-- 1ª VEZ -->
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 1">
+        <h3>Empresa 1</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 2">
+        <h3>Empresa 2</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 3">
+        <h3>Empresa 3</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+      <div class="carousel-slide">
+        <img src="foto.png" alt="Empresa 4">
+        <h3>Empresa 4</h3>
+        <p>Parceira Caffè Dell'Agnolo</p>
+      </div>
+      <!-- 2ª VEZ (clone para loop infinito) -->
       <div class="carousel-slide">
         <img src="foto.png" alt="Empresa 1">
         <h3>Empresa 1</h3>
@@ -267,12 +285,7 @@
         <p>Parceira Caffè Dell'Agnolo</p>
       </div>
     </div>
-
-    <button class="carousel-btn prev" id="carouselPrev" type="button" aria-label="Slide anterior">‹</button>
-    <button class="carousel-btn next" id="carouselNext" type="button" aria-label="Próximo slide">›</button>
   </div>
-
-  <div class="carousel-dots" id="carouselDots"></div>
 
   <div class="parceiros-cta">
     <h3>Seja um parceiro também!!!</h3>
@@ -302,7 +315,6 @@
     <p class="cart-total">Total: <strong id="cartTotal">R$ 0,00</strong></p>
     <button class="cart-checkout" id="cartCheckout" type="button">Finalizar pedido</button>
   </div>
-
 </aside>
 
 <aside class="profile-modal" id="profileModal" aria-labelledby="profileTitle" aria-hidden="true">
@@ -361,7 +373,6 @@
       <button class="purchase-continue" id="purchaseContinue" type="button">Continuar comprando</button>
     </div>
   </div>
-
 </div>
 
 <!-- ================= PAYMENT FINALIZATION MODAL ================= -->
@@ -405,7 +416,6 @@
         Editar cadastro (CEP/endereço)
       </button>
     </div>
-
   </div>
 </div>
 
@@ -415,7 +425,6 @@
     <div class="cart-header">
       <h2 id="pixPaymentTitle">Pagamento via Pix</h2>
       <button class="cart-close" id="pixPaymentClose" type="button" aria-label="Voltar">←</button>
-
     </div>
 
     <div class="payment-summary" aria-live="polite" style="margin-top: 1rem;">
@@ -423,7 +432,6 @@
         <span>Total</span>
         <strong id="pixPaymentTotal">R$ 0,00</strong>
       </div>
-    </div>
 
     <p class="payment-note" style="margin-top: 0.8rem; color: var(--muted);">
       Escaneie o QR Code abaixo para realizar o pagamento.
@@ -439,23 +447,18 @@
         <div style="margin-top: 0.5rem; padding: 0.8rem; border-radius: 12px; background: rgba(239, 227, 207, 0.35); border: 1px dashed rgba(28,28,28,0.2); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 0.85rem; word-break: break-word;" id="pixCopyCode">COPIAR_PIX_AQUI</div>
         <button class="payment-edit" id="pixCopyButton" type="button" style="margin-top: 0.85rem;">Copiar código Pix</button>
       </div>
-    </div>
 
     <div class="payment-actions" style="margin-top: 1.5rem;">
       <button class="cart-checkout" id="pixPaymentDone" type="button">Já paguei</button>
     </div>
+    </div>
   </div>
 </div>
 
-
-
 <!-- ================= PURCHASE SUCCESS POPUP ================= -->
 <div class="success-overlay" id="successOverlay" hidden>
-
-
   <div class="success-modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
-
-    <h2 id="successTitle">Compra realizada com sucesso! \uD83C\uDF89</h2>
+    <h2 id="successTitle">Compra realizada com sucesso! 🎉</h2>
     <p id="successMessage">Obrigado pela sua compra.</p>
     <div class="success-actions">
       <button id="successClose" type="button">Fechar</button>

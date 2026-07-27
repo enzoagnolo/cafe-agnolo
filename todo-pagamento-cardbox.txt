@@ -1,2 +1,0 @@
-Ajustar modal de pagamento igual ao cart: implementar overlay + caixa central + botões/inputs necessários.
-
