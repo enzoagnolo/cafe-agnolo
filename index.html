@@ -1,506 +1,744 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Caffè Dell'Agnolo</title>
-  <meta name="description" content="Caffè Dell'Agnolo — cafés artesanais com identidade, tradição e sabor. De Maringá-PR para o Brasil.">
-
-  <link rel="icon" href="foto.png" type="image/png">
-
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-<div id="topo"></div>
-
-<!-- ================= TOP BAR ================= -->
-<nav class="top-bar">
-  <div class="top-bar-content">
-   <a href="#topo" class="logo">Caffè Dell'Agnolo</a>
-
-    <!-- BOTÃO MENU MOBILE -->
-    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
-      ☰
-    </button>
-
-    <!-- LINKS -->
-    <div class="top-links" id="topLinks">
-      <a href="#essencia">Sobre nós</a>
-      <a href="#avisos">Avisos</a>
-      <a href="#sabores">Produtos</a>
-      <a href="#parceiros">Parceiros</a>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Caffè Dell'Agnolo — cafés artesanais de Maringá para o Brasil.">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'">
+    <title>
+      Caffè Dell'Agnolo — Café com história
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true">
     </div>
-
-    <button class="cart-trigger" id="cartTrigger" type="button" aria-label="Abrir carrinho" aria-expanded="false">
-      Carrinho <span id="cartCount" class="cart-count">0</span>
-    </button>
-    <button class="login-trigger" id="profileTrigger" type="button" aria-label="Abrir perfil / Log-in" aria-expanded="false">Log-in</button>
-
-    <span class="user-greeting" id="userGreeting" hidden></span>
-  </div>
-</nav>
-
-<!-- ================= HERO ================= -->
-<header class="fade-up">
-  <div class="hero-content">
-    <p class="hero-subtitle">Cafés artesanais com identidade</p>
-    <h1>Caffè Dell'Agnolo</h1>
-    <p class="hero-text">
-      Mais do que café: estilo, sabor e presença em cada xícara.<br>
-      Uma nova marca que nasce com personalidade e transforma o café em uma experiência única.
-    </p>
-
-    <a href="#sabores" class="hero-button" id="heroProductsButton">Conheça nossos produtos</a>
-  </div>
-</header>
-
-<!-- ================= ESSÊNCIA ================= -->
-<section id="essencia" class="fade-up">
-  <h2 class="section-title">Um pouco sobre nós</h2>
-
-  <div class="essencia-content">
-    <div class="essencia-text">
-      <p class="section-text">
-        A família Dell'Agnolo, na década de 1960, deixou a Itália em busca de uma nova vida no Brasil.
-        Foi em uma fazenda na cidade de Piraju (SP) que o café entrou pela primeira vez na história da família — 
-        e, desde então, transformou-se em uma verdadeira paixão.
-      </p>
-
-      <p class="section-text">
-        Anos depois, já em Maringá (PR), a família fundou uma torrefação artesanal na região onde hoje se encontra a praça da Avenida Rocha Pombo,
-        conhecida na época como Café Camor.
-      </p>
-
-      <p class="section-text">
-        Por muitos anos, o cheiro do café torrando virou parte da rotina: um convite para reunir pessoas, contar histórias e
-        celebrar o momento do preparo com cuidado em cada etapa.
-      </p>
-
-      <p class="section-text">
-        Com o passar do tempo, esse capítulo foi encerrado.
-      </p>
-
-      <p class="section-text">
-        E hoje, o Caffè Dell’Agnolo nasce inspirado nessa trajetória familiar, trazendo de volta esse legado com um novo propósito:
-        resgatar a essência do café feito com identidade, cuidado e história.
-      </p>
-
-      <p class="section-text">
-        Produzimos cafés artesanais que valorizam sabor, origem e autenticidade.
-        Cada detalhe é pensado para proporcionar uma experiência sensorial única,
-        onde tradição, qualidade e personalidade se encontram em cada xícara.
-        <strong>De Maringá-PR para o Brasil.</strong>
-      </p>
-
+    <div id="topo">
     </div>
-  </div>
-</section>
-
-<!-- ================= AVISOS ================= -->
-<section id="avisos" class="fade-up">
-  <h2 class="section-title">Avisos</h2>
-
-  <p class="section-text">
-    Estamos em fase de desenvolvimento e, neste início, nossos pedidos são realizados diretamente
-    pelo WhatsApp ou Instagram — com pagamento <strong>exclusivamente via Pix</strong>.
-  </p>
-
-  <p class="section-text">
-    Após a confirmação da compra, cuidamos de cada detalhe com atenção e mantemos você informado
-    sobre todas as etapas da entrega, desde a separação até a finalização do pedido.
-  </p>
-
-  <p class="section-text">
-    Em breve, traremos melhorias para tornar a experiência em nosso site ainda mais completa.
-    Até lá, agradecemos pela confiança e pela parceria.
-  </p>
-
-</section>
-
-<!-- ================= PRODUTOS ================= -->
-<section id="sabores" class="fade-up">
-  <h2 class="section-title">Produtos</h2>
-
-  <div class="sabores-lista">
-    <article class="produto-card">
-      <img class="produto-image" src="grao.jpeg" alt="Café Sabor da Roça">
-
-      <div class="produto-content">
-        <div class="produto-header">
-          <h3>Café em Grãos</h3>
-          <span class="produto-tag">Lançamento</span>
-        </div>
-
-        <p class="produto-desc">
-          Ideal para quem prefere moer o café na hora, preservando o aroma, o frescor e o sabor em cada preparo.
-        </p>
-
-        <button class="produto-toggle" type="button" aria-expanded="false">Ver características</button>
-
-        <div class="produto-detalhes" hidden>
-          <ul class="produto-caracteristicas">
-            <li>Grãos inteiros de alta qualidade</li>
-            <li>Maior preservação de aroma e sabor</li>
-            <li>Ideal para moagem na hora</li>
-            <li>Perfeito para coados, espresso e métodos especiais</li>
-          </ul>
-        </div>
-
-        <div class="produto-precos">
-          <span class="old-price">R$ 34,90</span>
-          <span class="price">R$ 29,90</span>
-          <span class="produto-tamanho">250g</span>
-        </div>
-
-        <div class="produto-acoes">
-          <button class="add-cart" type="button">Adicionar ao carrinho</button>
-          <button class="buy-now" type="button">Comprar</button>
-        </div>
-      </div>
-    </article>
-
-    <article class="produto-card">
-      <img class="produto-image" src="sabor da roca.jpeg" alt="Café Sabor da Roça">
-
-      <div class="produto-content">
-        <div class="produto-header">
-          <h3>Café Sabor da Roça</h3>
-          <span class="produto-tag">Lançamento</span>
-        </div>
-
-        <p class="produto-desc">
-          Inspirado no café coado da roça, com intensidade marcante, notas terrosas e uma doçura natural.
-        </p>
-
-        <button class="produto-toggle" type="button" aria-expanded="false">Ver características</button>
-
-        <div class="produto-detalhes" hidden>
-          <ul class="produto-caracteristicas">
-            <li>Perfil tradicional e encorpado</li>
-            <li>Notas de terra e sabor marcante</li>
-            <li>Ideal para quem gosta de café com personalidade</li>
-          </ul>
-        </div>
-
-        <div class="produto-precos">
-          <span class="old-price">R$ 32,90</span>
-          <span class="price">R$ 29,90</span>
-          <span class="produto-tamanho">250g</span>
-        </div>
-
-        <div class="produto-acoes">
-          <button class="add-cart" type="button">Adicionar ao carrinho</button>
-          <button class="buy-now" type="button">Comprar</button>
-        </div>
-      </div>
-    </article>
-
-    <article class="produto-card">
-      <img class="produto-image" src="outono.jpeg" alt="Café Outono">
-
-      <div class="produto-content">
-        <div class="produto-header">
-          <h3>Café Outono</h3>
-          <span class="produto-tag">Edição especial</span>
-        </div>
-
-        <p class="produto-desc">
-          Com notas de canela e especiarias, oferece um sabor envolvente e sofisticado para todas as horas.
-        </p>
-
-        <button class="produto-toggle" type="button" aria-expanded="false">Ver características</button>
-
-        <div class="produto-detalhes" hidden>
-          <ul class="produto-caracteristicas">
-            <li>Aromas quentes e acolhedores</li>
-            <li>Equilíbrio entre intensidade e suavidade</li>
-            <li>Perfeito para acompanhar o dia</li>
-          </ul>
-        </div>
-
-        <div class="produto-precos">
-          <span class="old-price">R$ 34,90</span>
-          <span class="price">R$ 32,90</span>
-          <span class="produto-tamanho">250g</span>
-        </div>
-
-        <div class="produto-acoes">
-          <button class="add-cart" type="button">Adicionar ao carrinho</button>
-          <button class="buy-now" type="button">Comprar</button>
-        </div>
-      </div>
-    </article>
-  </div>
-</section>
-<!-- ================= PARCEIROS ================= -->
-<section id="parceiros" class="fade-up">
-  <h2 class="section-title">Parceiros</h2>
-
-  <div class="carousel-container">
-    <div class="carousel-track" id="carouselTrack">
-      <!-- 1ª VEZ -->
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 1">
-        <h3>Empresa 1</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 2">
-        <h3>Empresa 2</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 3">
-        <h3>Empresa 3</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 4">
-        <h3>Empresa 4</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-      <!-- 2ª VEZ (clone para loop infinito) -->
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 1">
-        <h3>Empresa 1</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 2">
-        <h3>Empresa 2</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 3">
-        <h3>Empresa 3</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-      <div class="carousel-slide">
-        <img src="foto.png" alt="Empresa 4">
-        <h3>Empresa 4</h3>
-        <p>Parceira Caffè Dell'Agnolo</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="parceiros-cta">
-    <h3>Seja um parceiro também!!!</h3>
-    <p>Entre em contato conosco pelo WhatsApp ou pelo nosso Instagram</p>
-    <div class="contact-buttons">
-      <a class="whatsapp" href="https://wa.me/5544999166089" target="_blank">
-        Entre em contato pelo WhatsApp
+    <header class="site-header" id="siteHeader">
+      <a class="brand" href="#topo" aria-label="Caffè Dell'Agnolo, página inicial">
+        <span>
+          Caffè
+          <em>
+            Dell'Agnolo
+          </em>
+        </span>
       </a>
-      <a class="instagram" href="https://instagram.com/cafedellagnolo" target="_blank">
-        Siga nosso Instagram
+      <nav class="main-nav" id="topLinks" aria-label="Navegação principal">
+        <a href="#essencia">
+          A marca
+        </a>
+        <a href="#sabores">
+          Cafés
+        </a>
+        <a href="#parceiros">
+          Encontre-nos
+        </a>
+      </nav>
+      <div class="header-actions">
+        <button class="profile-trigger" id="profileTrigger" type="button" aria-label="Abrir perfil ou fazer login">
+          Log-in
+        </button>
+        <button class="cart-trigger" id="cartTrigger" type="button" aria-label="Abrir carrinho" aria-expanded="false">
+          <span class="cart-icon" aria-hidden="true">
+            Bag
+          </span>
+          <span class="cart-count" id="cartCount">
+            0
+          </span>
+        </button>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false">
+          <span>
+          </span>
+          <span>
+          </span>
+        </button>
+      </div>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            Maringá, Paraná · desde 1960
+          </p>
+          <h1 id="hero-title">
+            O café que
+            <em>
+              pede
+            </em>
+            tempo.
+          </h1>
+          <p class="hero-description">
+            Um ritual de aroma, origem e memória. Cafés artesanais para transformar as pausas mais simples do seu dia.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-dark" href="#sabores" id="heroProductsButton">
+              Escolher meu café
+              <span>
+                ↘
+              </span>
+            </a>
+            <a class="text-link" href="#essencia">
+              Nossa origem
+              <span>
+                ↓
+              </span>
+            </a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-orbit orbit-one">
+          </div>
+          <div class="hero-orbit orbit-two">
+          </div>
+          <p class="hero-note">
+            TORRA
+            <br>
+            ARTESANAL
+          </p>
+          <img src="capa1.jpeg" alt="Grãos e xícara de café Dell'Agnolo">
+          <div class="hero-stamp">
+            <span>
+              feito para
+              <br>
+              sentir
+            </span>
+            <b>
+              ●
+            </b>
+          </div>
+        </div>
+        <div class="hero-foot">
+          <span>
+            01 / 04
+          </span>
+          <span>
+            Deslize para descobrir
+          </span>
+          <span>
+            ↓
+          </span>
+        </div>
+      </section>
+      <section class="manifesto reveal" id="essencia">
+        <p class="eyebrow">
+          01 — A nossa essência
+        </p>
+        <div class="manifesto-grid">
+          <h2>
+            Uma história que
+            <br>
+            continua
+            <em>
+              na xícara.
+            </em>
+          </h2>
+          <div class="manifesto-copy">
+            <p>
+              A família Dell'Agnolo trouxe da Itália a coragem de recomeçar. Em uma fazenda de Piraju, o café passou a fazer parte da nossa história — e nunca mais saiu.
+            </p>
+            <p>
+              Décadas depois, a torrefação artesanal de Maringá voltou a dar vida a esse legado. Hoje, cada lote carrega a mesma atenção aos detalhes, ao sabor e às pessoas reunidas à mesa.
+            </p>
+            <a class="text-link" href="#avisos">
+              Conheça o nosso processo
+              <span>
+                ↘
+              </span>
+            </a>
+          </div>
+        </div>
+        <div class="manifesto-stats">
+          <div>
+            <strong>
+              1960
+            </strong>
+            <span>
+              o café entrou na família
+            </span>
+          </div>
+          <div>
+            <strong>
+              100%
+            </strong>
+            <span>
+              feito com cuidado artesanal
+            </span>
+          </div>
+          <div>
+            <strong>
+              1 ritual
+            </strong>
+            <span>
+              para cada jeito de preparar
+            </span>
+          </div>
+        </div>
+      </section>
+      <section class="process reveal" id="avisos">
+        <div class="process-image">
+          <img src="familia.jpeg" alt="Café sendo preparado">
+          <span>
+            Do grão à memória
+          </span>
+        </div>
+        <div class="process-content">
+          <p class="eyebrow">
+            02 — Sem atalhos
+          </p>
+          <h2>
+            Origem, tempo
+            <br>
+            e intenção.
+          </h2>
+          <p>
+            Selecionamos cafés para quem entende que sabor não se apressa. Em pequenos lotes, fazemos uma torra que respeita o perfil de cada grão.
+          </p>
+          <ul class="process-list">
+            <li>
+              <span>
+                01
+              </span>
+              Seleção com origem
+            </li>
+            <li>
+              <span>
+                02
+              </span>
+              Torra em pequenos lotes
+            </li>
+            <li>
+              <span>
+                03
+              </span>
+              Envio fresco para você
+            </li>
+          </ul>
+          <div class="notice">
+            <span>
+              i
+            </span>
+            <p>
+              Pedidos via WhatsApp ou Instagram, com pagamento seguro por Pix.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="collection reveal" id="sabores">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">
+              03 — A coleção
+            </p>
+            <h2>
+              Encontre o seu
+              <em>
+                ritual.
+              </em>
+            </h2>
+          </div>
+          <p>
+            Três perfis para diferentes momentos, todos com a mesma dedicação em cada grão.
+          </p>
+        </div>
+        <div class="products-grid">
+          <article class="produto-card" data-product="grãos">
+            <div class="product-image-wrap">
+              <span class="product-index">
+                01
+              </span>
+              <img class="produto-image" src="grao.jpeg" alt="Café em Grãos">
+              <button class="quick-add add-cart" type="button" aria-label="Adicionar Café em Grãos">
+                +
+              </button>
+            </div>
+            <div class="produto-content">
+              <div class="product-line">
+                <p class="product-kind">
+                  Para moer na hora
+                </p>
+                <span>
+                  250g
+                </span>
+              </div>
+              <h3>
+                Café em Grãos
+              </h3>
+              <p class="produto-desc">
+                Aroma preservado e frescor máximo para o seu método favorito.
+              </p>
+              <button class="produto-toggle" type="button" aria-expanded="false">
+                Notas & preparo
+                <span>
+                  +
+                </span>
+              </button>
+              <div class="produto-detalhes" hidden>
+                <p>
+                  Alta qualidade, corpo equilibrado e versatilidade para coados, espresso e métodos especiais.
+                </p>
+              </div>
+              <div class="product-bottom">
+                <strong class="price">
+                  R$ 29,90
+                </strong>
+                <span class="old-price">
+                  R$ 34,90
+                </span>
+                <span class="produto-tamanho" hidden>
+                  250g
+                </span>
+                <button class="buy-now" type="button">
+                  Comprar
+                  <span>
+                    ↗
+                  </span>
+                </button>
+              </div>
+            </div>
+          </article>
+          <article class="produto-card featured" data-product="roça">
+            <div class="product-image-wrap">
+              <span class="product-index">
+                02
+              </span>
+              <img class="produto-image" src="sabor da roca.jpeg" alt="Café Sabor da Roça">
+              <button class="quick-add add-cart" type="button" aria-label="Adicionar Café Sabor da Roça">
+                +
+              </button>
+            </div>
+            <div class="produto-content">
+              <div class="product-line">
+                <p class="product-kind">
+                  Intenso & afetivo
+                </p>
+                <span>
+                  250g
+                </span>
+              </div>
+              <h3>
+                Café Sabor da Roça
+              </h3>
+              <p class="produto-desc">
+                Notas terrosas e doçura natural, como o café coado de antigamente.
+              </p>
+              <button class="produto-toggle" type="button" aria-expanded="false">
+                Notas & preparo
+                <span>
+                  +
+                </span>
+              </button>
+              <div class="produto-detalhes" hidden>
+                <p>
+                  Perfil encorpado e marcante. Uma escolha acolhedora para coador, prensa e cafeteira.
+                </p>
+              </div>
+              <div class="product-bottom">
+                <strong class="price">
+                  R$ 29,90
+                </strong>
+                <span class="old-price">
+                  R$ 32,90
+                </span>
+                <span class="produto-tamanho" hidden>
+                  250g
+                </span>
+                <button class="buy-now" type="button">
+                  Comprar
+                  <span>
+                    ↗
+                  </span>
+                </button>
+              </div>
+            </div>
+          </article>
+          <article class="produto-card" data-product="outono">
+            <div class="product-image-wrap">
+              <span class="product-index">
+                03
+              </span>
+              <span class="product-badge">
+                Mais pedido
+              </span>
+              <img class="produto-image" src="outono.jpeg" alt="Café Outono">
+              <button class="quick-add add-cart" type="button" aria-label="Adicionar Café Outono">
+                +
+              </button>
+            </div>
+            <div class="produto-content">
+              <div class="product-line">
+                <p class="product-kind">
+                  Edição especial
+                </p>
+                <span>
+                  250g
+                </span>
+              </div>
+              <h3>
+                Café Outono
+              </h3>
+              <p class="produto-desc">
+                Canela e especiarias em uma xícara macia, quente e envolvente.
+              </p>
+              <button class="produto-toggle" type="button" aria-expanded="false">
+                Notas & preparo
+                <span>
+                  +
+                </span>
+              </button>
+              <div class="produto-detalhes" hidden>
+                <p>
+                  Aromas acolhedores, com equilíbrio entre intensidade e suavidade.
+                </p>
+              </div>
+              <div class="product-bottom">
+                <strong class="price">
+                  R$ 32,90
+                </strong>
+                <span class="old-price">
+                  R$ 34,90
+                </span>
+                <span class="produto-tamanho" hidden>
+                  250g
+                </span>
+                <button class="buy-now" type="button">
+                  Comprar
+                  <span>
+                    ↗
+                  </span>
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section class="partners reveal" id="parceiros">
+        <div class="partners-title">
+          <p class="eyebrow">
+            04 — Onde tomar
+          </p>
+          <h2>
+            Boas histórias
+            <br>
+            merecem
+            <em>
+              companhia.
+            </em>
+          </h2>
+        </div>
+        <div class="partners-panel">
+          <p>
+            Quer levar a experiência Dell'Agnolo para o seu espaço?
+          </p>
+          <div>
+            <a class="button button-light" href="https://wa.me/5544999166089" target="_blank" rel="noreferrer">
+              Falar pelo WhatsApp
+              <span>
+                ↗
+              </span>
+            </a>
+            <a class="text-link light" href="https://instagram.com/cafedellagnolo" target="_blank" rel="noreferrer">
+              @cafedellagnolo
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <a class="brand" href="#topo">
+        <span>
+          Caffè
+          <em>
+            Dell'Agnolo
+          </em>
+        </span>
       </a>
+      <p>
+        Feito em Maringá, para pausas com presença.
+      </p>
+      <p>
+        ©
+        <span id="footerYear">
+        </span>
+        Caffè Dell'Agnolo
+      </p>
+    </footer>
+    <div class="cart-overlay" id="cartOverlay" hidden>
     </div>
-  </div>
-</section>
-
-<!-- ================= SCROLL TOP ================= -->
-<button id="scrollTopBtn" aria-label="Voltar ao topo">↑</button>
-
-<div class="cart-overlay" id="cartOverlay" hidden></div>
-<aside class="cart-modal" id="cartModal" aria-labelledby="cartTitle" aria-hidden="true">
-  <div class="cart-header">
-    <h2 id="cartTitle">Seu carrinho</h2>
-    <button class="cart-close" id="cartClose" type="button" aria-label="Fechar carrinho">×</button>
-  </div>
-  <div class="cart-items" id="cartItems"></div>
-  <div class="cart-footer">
-    <p class="cart-total">Total: <strong id="cartTotal">R$ 0,00</strong></p>
-    <button class="cart-checkout" id="cartCheckout" type="button">Finalizar pedido</button>
-  </div>
-</aside>
-
-<aside class="profile-modal" id="profileModal" aria-labelledby="profileTitle" aria-hidden="true">
-  <div class="cart-header">
-    <h2 id="profileTitle">Meu perfil</h2>
-    <button class="cart-close" id="profileClose" type="button" aria-label="Fechar perfil">&times;</button>
-  </div>
-  <div class="profile-content">
-    <section>
-      <h3>Meus dados</h3>
-      <div id="profileDetails"></div>
-    </section>
-    <section>
-      <h3>Pedidos realizados</h3>
-      <div id="orderHistory"></div>
-    </section>
-  </div>
-</aside>
-
-<div class="registration-overlay" id="registrationOverlay" hidden>
-  <form class="checkout-form" id="checkoutForm" aria-labelledby="registrationTitle">
-    <div class="registration-header">
-      <h3 id="registrationTitle">Complete seu cadastro</h3>
-      <button class="registration-close" id="registrationClose" type="button" aria-label="Fechar cadastro">×</button>
-    </div>
-    <p>Precisamos destes dados para registrar seu pedido.</p>
-
-    <label>Nome completo
-      <input id="customerName" name="name" type="text" autocomplete="name" required>
-    </label>
-    <label>Telefone para contato
-      <input id="customerPhone" name="phone" type="tel" autocomplete="tel" required>
-    </label>
-    <label>CEP
-      <input id="customerCep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" required>
-    </label>
-    <label>E-mail
-      <input id="customerEmail" name="email" type="email" autocomplete="email" required>
-    </label>
-    <label>Endereço completo
-      <textarea id="customerAddress" name="address" autocomplete="street-address" required></textarea>
-    </label>
-
-    <button type="submit">Salvar e continuar</button>
-    <button class="skip-registration" id="skipRegistration" type="button">Continuar sem cadastro</button>
-  </form>
-</div>
-
-<div class="purchase-choice-overlay" id="purchaseChoiceOverlay" hidden>
-  <div class="purchase-choice" role="dialog" aria-modal="true" aria-labelledby="purchaseChoiceTitle">
-    <h2 id="purchaseChoiceTitle">Produto adicionado ao carrinho</h2>
-<p>Você quer finalizar o pagamento agora ou continuar comprando?</p>
-
-    <div class="purchase-choice-actions">
-      <button class="purchase-finish" id="purchaseFinish" type="button">Finalizar compra</button>
-      <button class="purchase-continue" id="purchaseContinue" type="button">Continuar comprando</button>
-    </div>
-  </div>
-</div>
-
-<!-- ================= PAYMENT FINALIZATION MODAL ================= -->
-<div class="payment-finalization-overlay" id="paymentFinalizationOverlay" hidden>
-  <div class="payment-finalization-modal" role="dialog" aria-modal="true" aria-labelledby="paymentFinalizationTitle">
-    <div class="cart-header">
-      <h2 id="paymentFinalizationTitle">Concluir pagamento</h2>
-      <button class="cart-close" id="paymentFinalizationClose" type="button" aria-label="Fechar pagamento">×</button>
-    </div>
-
-    <div class="payment-summary" aria-live="polite" style="margin-top: 1rem;">
-      <div class="payment-row">
-        <span>Subtotal</span>
-        <strong id="paymentSubtotal">R$ 0,00</strong>
+    <aside class="cart-modal" id="cartModal" aria-labelledby="cartTitle" aria-hidden="true">
+      <div class="modal-header">
+        <p class="eyebrow">
+          Seu pedido
+        </p>
+        <button class="icon-button" id="cartClose" type="button" aria-label="Fechar carrinho">
+          ×
+        </button>
       </div>
-      <div class="payment-row">
-        <span>Frete</span>
-        <strong id="paymentShipping">R$ 0,00</strong>
+      <h2 id="cartTitle">
+        Sua seleção
+        <em>
+          especial.
+        </em>
+      </h2>
+      <div class="cart-items" id="cartItems">
       </div>
-      <div class="payment-row payment-total">
-        <span>Total</span>
-        <strong id="paymentTotal">R$ 0,00</strong>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>
+            Subtotal
+          </span>
+          <strong id="cartTotal">
+            R$ 0,00
+          </strong>
+        </div>
+        <button class="button button-dark cart-checkout" id="cartCheckout" type="button">
+          Continuar para pagamento
+          <span>
+            ↗
+          </span>
+        </button>
+      </div>
+    </aside>
+    <aside class="profile-modal" id="profileModal" aria-labelledby="profileTitle" aria-hidden="true">
+      <div class="modal-header">
+        <p class="eyebrow">
+          Sua conta
+        </p>
+        <button class="icon-button" id="profileClose" type="button" aria-label="Fechar perfil">
+          ×
+        </button>
+      </div>
+      <h2 id="profileTitle">
+        Olá,
+        <em>
+          bem-vindo.
+        </em>
+      </h2>
+      <div class="profile-content">
+        <section>
+          <h3>
+            Seus dados
+          </h3>
+          <div id="profileDetails">
+          </div>
+        </section>
+        <section>
+          <h3>
+            Pedidos recentes
+          </h3>
+          <div id="orderHistory">
+          </div>
+        </section>
+      </div>
+    </aside>
+    <div class="registration-overlay modal-overlay" id="registrationOverlay" hidden>
+      <form class="checkout-form modal-card" id="checkoutForm">
+        <div class="modal-header">
+          <p class="eyebrow">
+            Vamos nos conhecer
+          </p>
+          <button class="icon-button" id="registrationClose" type="button" aria-label="Fechar">
+            ×
+          </button>
+        </div>
+        <h2>
+          Seus dados,
+          <br>
+          <em>
+            com carinho.
+          </em>
+        </h2>
+        <p>
+          Usaremos estas informações apenas para preparar e enviar seu pedido. Elas não são salvas neste dispositivo e são descartadas ao fechar ou atualizar a página.
+        </p>
+        <div class="form-grid">
+          <label>
+            Nome completo
+            <input id="customerName" name="name" autocomplete="name" maxlength="120" required>
+          </label>
+          <label>
+            Telefone
+            <input id="customerPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" required>
+          </label>
+          <label>
+            CEP
+            <input id="customerCep" name="cep" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}-?[0-9]{3}" maxlength="9" required>
+          </label>
+          <label>
+            E-mail
+            <input id="customerEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
+          </label>
+          <label class="wide">
+            Endereço completo
+            <textarea id="customerAddress" name="address" autocomplete="street-address" maxlength="300" required>
+            </textarea>
+          </label>
+        </div>
+        <button class="button button-dark" type="submit">
+          Salvar e continuar
+          <span>
+            ↗
+          </span>
+        </button>
+        <button class="skip-registration" id="skipRegistration" type="button">
+          Agora não
+        </button>
+      </form>
+    </div>
+    <div class="purchase-choice-overlay modal-overlay" id="purchaseChoiceOverlay" hidden>
+      <div class="purchase-choice modal-card">
+        <p class="eyebrow">
+          Adicionado ao carrinho
+        </p>
+        <h2>
+          Uma ótima
+          <br>
+          <em>
+            escolha.
+          </em>
+        </h2>
+        <p>
+          Seu café já está reservado. Quer finalizar o pedido?
+        </p>
+        <div class="choice-actions">
+          <button class="button button-dark" id="purchaseFinish" type="button">
+            Finalizar pedido
+            <span>
+              ↗
+            </span>
+          </button>
+          <button class="button button-outline" id="purchaseContinue" type="button">
+            Continuar explorando
+          </button>
+        </div>
       </div>
     </div>
-
-    <p class="payment-note" style="margin-top: 0.8rem; color: var(--muted);">
-      O frete é estimado com base em referência. Finalize o pedido e confirme o endereço.
-    </p>
-
-    <div class="payment-note" style="margin-top: 0.9rem;">
-      <strong>Forma de pagamento:</strong>
-      <div style="margin-top: 0.35rem; color: var(--muted);">Pix</div>
-    </div>
-
-    <div class="payment-actions" style="margin-top: 1.2rem;">
-      <button class="cart-checkout" id="paymentFinalizationConfirm" type="button">Confirmar e finalizar pedido</button>
-    </div>
-
-    <div class="payment-secondary-actions" style="margin-top: 0.75rem;">
-      <button class="payment-edit" id="paymentFinalizationEdit" type="button">
-        Editar cadastro (CEP/endereço)
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ================= PIX QR MODAL ================= -->
-<div class="payment-finalization-overlay" id="pixPaymentOverlay" hidden>
-  <div class="payment-finalization-modal" role="dialog" aria-modal="true" aria-labelledby="pixPaymentTitle">
-    <div class="cart-header">
-      <h2 id="pixPaymentTitle">Pagamento via Pix</h2>
-      <button class="cart-close" id="pixPaymentClose" type="button" aria-label="Voltar">←</button>
-    </div>
-
-    <div class="payment-summary" aria-live="polite" style="margin-top: 1rem;">
-      <div class="payment-row">
-        <span>Total</span>
-        <strong id="pixPaymentTotal">R$ 0,00</strong>
+    <div class="payment-finalization-overlay modal-overlay" id="paymentFinalizationOverlay" hidden>
+      <div class="payment-finalization-modal modal-card">
+        <div class="modal-header">
+          <p class="eyebrow">
+            Último passo
+          </p>
+          <button class="icon-button" id="paymentFinalizationClose" type="button" aria-label="Fechar">
+            ×
+          </button>
+        </div>
+        <h2>
+          Confira seu
+          <em>
+            pedido.
+          </em>
+        </h2>
+        <div class="payment-summary">
+          <div>
+            <span>
+              Subtotal
+            </span>
+            <strong id="paymentSubtotal">
+              R$ 0,00
+            </strong>
+          </div>
+          <div>
+            <span>
+              Entrega estimada
+            </span>
+            <strong id="paymentShipping">
+              R$ 0,00
+            </strong>
+          </div>
+          <div class="payment-total">
+            <span>
+              Total
+            </span>
+            <strong id="paymentTotal">
+              R$ 0,00
+            </strong>
+          </div>
+        </div>
+        <p class="payment-note">
+          O valor da entrega é estimado pelo CEP e será confirmado antes do envio.
+        </p>
+        <div class="choice-actions">
+          <button class="button button-dark" id="paymentFinalizationConfirm" type="button">
+            Pagar com Pix
+            <span>
+              ↗
+            </span>
+          </button>
+          <button class="button button-outline" id="paymentFinalizationEdit" type="button">
+            Editar dados
+          </button>
+        </div>
       </div>
-
-    <p class="payment-note" style="margin-top: 0.8rem; color: var(--muted);">
-      Escaneie o QR Code abaixo para realizar o pagamento.
-    </p>
-
-    <div style="margin-top: 1.2rem; display: grid; gap: 0.9rem; place-items: center;">
-      <div style="width: 220px; height: 220px; background: #ffffff; border-radius: 16px; border: 1px solid rgba(28, 28, 28, 0.12); display: grid; place-items: center; overflow: hidden;">
-        <img id="pixQrImage" alt="QR Code Pix" style="width: 180px; height: 180px; object-fit: contain;" />
+    </div>
+    <div class="payment-finalization-overlay modal-overlay" id="pixPaymentOverlay" hidden>
+      <div class="payment-finalization-modal modal-card pix-card">
+        <div class="modal-header">
+          <p class="eyebrow">
+            Pagamento Pix
+          </p>
+          <button class="icon-button" id="pixPaymentClose" type="button" aria-label="Voltar">
+            ←
+          </button>
+        </div>
+        <h2>
+          Quase lá.
+        </h2>
+        <p>
+          Escaneie o código para pagar
+          <strong id="pixPaymentTotal">
+            R$ 0,00
+          </strong>
+          .
+        </p>
+        <div class="pix-code">
+          <div class="pix-visual">
+            <span>
+              PIX
+            </span>
+          </div>
+          <code id="pixCopyCode">
+            COPIAR_PIX_AQUI
+          </code>
+          <button class="button button-outline" id="pixCopyButton" type="button">
+            Copiar código Pix
+          </button>
+        </div>
+        <button class="button button-dark" id="pixPaymentDone" type="button">
+          Já fiz o pagamento
+          <span>
+            ✓
+          </span>
+        </button>
       </div>
-
-      <div style="width: 100%; max-width: 420px;">
-        <p style="color: var(--muted); font-size: 0.92rem;">Se não conseguir escanear, copie o código Pix:</p>
-        <div style="margin-top: 0.5rem; padding: 0.8rem; border-radius: 12px; background: rgba(239, 227, 207, 0.35); border: 1px dashed rgba(28,28,28,0.2); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 0.85rem; word-break: break-word;" id="pixCopyCode">COPIAR_PIX_AQUI</div>
-        <button class="payment-edit" id="pixCopyButton" type="button" style="margin-top: 0.85rem;">Copiar código Pix</button>
+    </div>
+    <div class="success-overlay modal-overlay" id="successOverlay" hidden>
+      <div class="success-modal modal-card">
+        <p class="eyebrow">
+          Pedido recebido
+        </p>
+        <h2>
+          Obrigado por
+          <br>
+          <em>
+            escolher com calma.
+          </em>
+        </h2>
+        <p id="successMessage">
+          Seu pedido foi registrado. Em breve entraremos em contato para confirmar tudo.
+        </p>
+        <button class="button button-dark" id="successClose" type="button">
+          Voltar à loja
+        </button>
       </div>
-
-    <div class="payment-actions" style="margin-top: 1.5rem;">
-      <button class="cart-checkout" id="pixPaymentDone" type="button">Já paguei</button>
     </div>
+    <div class="toast" id="toast" role="status" aria-live="polite">
     </div>
-  </div>
-</div>
-
-<!-- ================= PURCHASE SUCCESS POPUP ================= -->
-<div class="success-overlay" id="successOverlay" hidden>
-  <div class="success-modal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
-    <h2 id="successTitle">Compra realizada com sucesso! 🎉</h2>
-    <p id="successMessage">Obrigado pela sua compra.</p>
-    <div class="success-actions">
-      <button id="successClose" type="button">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ================= FOOTER ================= -->
-<footer class="site-footer">
-  <div class="footer-content">
-    <div class="footer-brand">
-      <h3>Caffè Dell'Agnolo</h3>
-      <p>Cafés artesanais com identidade, tradição e sabor.</p>
-    </div>
-
-    <div class="footer-links">
-      <h4>Navegação</h4>
-      <a href="#essencia">Sobre nós</a>
-      <a href="#avisos">Avisos</a>
-      <a href="#sabores">Produtos</a>
-      <a href="#parceiros">Parceiros</a>
-    </div>
-
-    <div class="footer-contact">
-      <h4>Contato</h4>
-      <a href="https://wa.me/5544999166089" target="_blank">WhatsApp</a>
-      <a href="https://instagram.com/cafedellagnolo" target="_blank">Instagram</a>
-      <a href="mailto:cafedellagnolo@gmail.com">E-mail</a>
-    </div>
-
-    <div class="footer-location">
-      <h4>Localização</h4>
-      <p>Maringá-PR, Brasil</p>
-    </div>
-  </div>
-
-  <div class="footer-bottom">
-    <p>© <span id="footerYear"></span> Caffè Dell'Agnolo. Todos os direitos reservados.</p>
-  </div>
-</footer>
-
-<script src="script.js"></script>
-
-</body>
+    <script src="script.js">
+    </script>
+  </body>
 </html>

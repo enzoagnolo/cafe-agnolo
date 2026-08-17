@@ -1,857 +1,215 @@
-const yearElement = document.getElementById('year');
-if (yearElement) {
-  yearElement.textContent = new Date().getFullYear();
-}
+const $ = (selector, scope = document) => scope.querySelector(selector);
+const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
-const footerYear = document.getElementById('footerYear');
-if (footerYear) {
-  footerYear.textContent = new Date().getFullYear();
-}
+const storage = {
+  get(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+  },
+  set(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+};
 
+const products = {
+  'Café em Grãos': { image: 'grao.jpeg', size: '250g', price: 'R$ 29,90' },
+  'Café Sabor da Roça': { image: 'sabor da roca.jpeg', size: '250g', price: 'R$ 29,90' },
+  'Café Outono': { image: 'outono.jpeg', size: '250g', price: 'R$ 32,90' }
+};
 
-const heroProductsButton = document.getElementById('heroProductsButton');
-const scrollTopButton = document.getElementById('scrollTopBtn');
-
-if (scrollTopButton) {
-  const toggleScrollTopButton = () => {
-    scrollTopButton.style.display = window.scrollY > 300 ? 'flex' : 'none';
-  };
-
-  window.addEventListener('scroll', toggleScrollTopButton, { passive: true });
-  toggleScrollTopButton();
-
-  scrollTopButton.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
-const cards = document.querySelectorAll('.produto-card');
-
-cards.forEach((card) => {
-  card.addEventListener('click', (event) => {
-    if (event.target.closest('.produto-toggle')) {
-      return;
-    }
-
-    const details = card.querySelector('.produto-detalhes');
-    const toggle = card.querySelector('.produto-toggle');
-    const isOpen = card.classList.toggle('is-open');
-
-    details.hidden = !isOpen;
-    toggle.setAttribute('aria-expanded', String(isOpen));
-    toggle.textContent = isOpen ? 'Ocultar características' : 'Ver características';
-  });
-});
-
-const toggleButtons = document.querySelectorAll('.produto-toggle');
-
-toggleButtons.forEach((button) => {
-  button.addEventListener('click', (event) => {
-    event.stopPropagation();
-
-    const card = button.closest('.produto-card');
-    const details = card.querySelector('.produto-detalhes');
-    const isOpen = card.classList.toggle('is-open');
-
-    details.hidden = !isOpen;
-    button.setAttribute('aria-expanded', String(isOpen));
-    button.textContent = isOpen ? 'Ocultar características' : 'Ver características';
-  });
-});
-
-let cart;
-let checkoutReady = false;
+let cart = storage.get('cart', []);
 let registrationOnly = false;
+let toastTimer;
+// Dados pessoais ficam apenas na memória desta aba e são descartados ao sair ou atualizar.
+// Remove qualquer cadastro salvo pela versão anterior do site.
+let customer = null;
+localStorage.removeItem('customer');
 
-const isLoggedIn = () => Boolean(localStorage.getItem('customer'));
+const cartTrigger = $('#cartTrigger');
+const cartModal = $('#cartModal');
+const cartOverlay = $('#cartOverlay');
+const cartItems = $('#cartItems');
+const cartCount = $('#cartCount');
+const cartTotal = $('#cartTotal');
+const checkoutForm = $('#checkoutForm');
+const profileModal = $('#profileModal');
+const profileTrigger = $('#profileTrigger');
+const registrationOverlay = $('#registrationOverlay');
+const paymentOverlay = $('#paymentFinalizationOverlay');
+const pixOverlay = $('#pixPaymentOverlay');
+const toast = $('#toast');
+const quickCheckout = $('#quickCheckout');
+const quickCheckoutCount = $('#quickCheckoutCount');
 
-const advanceToCheckout = () => {
-  // Garante que o fluxo vá direto para a finalização do pedido
-  checkoutReady = true;
-  cartCheckout.click();
-};
+$('#footerYear').textContent = new Date().getFullYear();
 
-
-try {
-  cart = JSON.parse(localStorage.getItem('cart') || '[]');
-} catch {
-  cart = [];
+function money(value) { return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+function priceValue(price) { return Number(String(price).replace(/[^\d,]/g, '').replace(',', '.')) || 0; }
+function escapeHtml(value = '') { return String(value).replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char])); }
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add('is-visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2600);
+}
+function getCustomer() { return customer; }
+function setOverlay(element, open) { element.hidden = !open; }
+function total() { return cart.reduce((sum, item) => sum + priceValue(item.price), 0); }
+function shipping(cep, subtotal) {
+  const first = Number(String(cep || '').replace(/\D/g, '').charAt(0));
+  if (!Number.isFinite(first)) return 14;
+  return Math.max(first <= 3 ? 18 : first <= 6 ? 14 : 22, Math.round(subtotal * .08 * 100) / 100);
 }
 
-const cartTrigger = document.getElementById('cartTrigger');
-const cartCount = document.getElementById('cartCount');
-const cartModal = document.getElementById('cartModal');
-const cartOverlay = document.getElementById('cartOverlay');
-const cartClose = document.getElementById('cartClose');
-const cartItems = document.getElementById('cartItems');
-const cartTotal = document.getElementById('cartTotal');
-const cartCheckout = document.getElementById('cartCheckout');
-const checkoutForm = document.getElementById('checkoutForm');
-
-const paymentFinalizationOverlay = document.getElementById('paymentFinalizationOverlay');
-const paymentFinalizationClose = document.getElementById('paymentFinalizationClose');
-const paymentFinalizationConfirm = document.getElementById('paymentFinalizationConfirm');
-const paymentFinalizationEdit = document.getElementById('paymentFinalizationEdit');
-
-const paymentSubtotal = document.getElementById('paymentSubtotal');
-const paymentShipping = document.getElementById('paymentShipping');
-const paymentTotal = document.getElementById('paymentTotal');
-
-const registrationOverlay = document.getElementById('registrationOverlay');
-
-
-const registrationClose = document.getElementById('registrationClose');
-const skipRegistration = document.getElementById('skipRegistration');
-const profileTrigger = document.getElementById('profileTrigger');
-const profileModal = document.getElementById('profileModal');
-const profileClose = document.getElementById('profileClose');
-
-const profileDetails = document.getElementById('profileDetails');
-const orderHistory = document.getElementById('orderHistory');
-const loginTrigger = document.getElementById('loginTrigger');
-const userGreeting = document.getElementById('userGreeting');
-
-const menuToggle = document.getElementById('menuToggle');
-const topLinks = document.getElementById('topLinks');
-
-if (menuToggle && topLinks) {
-  menuToggle.addEventListener('click', () => {
-    topLinks.classList.toggle('active');
-    menuToggle.setAttribute('aria-label', topLinks.classList.contains('active') ? 'Fechar menu' : 'Abrir menu');
-  });
-
-  // Fechar menu ao clicar em um link
-  topLinks.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      topLinks.classList.remove('active');
-      menuToggle.setAttribute('aria-label', 'Abrir menu');
-    });
-  });
-}
-
-const purchaseChoiceOverlay = document.getElementById('purchaseChoiceOverlay');
-const purchaseFinish = document.getElementById('purchaseFinish');
-const purchaseContinue = document.getElementById('purchaseContinue');
-const successOverlay = document.getElementById('successOverlay');
-const successClose = document.getElementById('successClose');
-
-
-
-
-
-
-const priceValue = (price) => Number(price.replace(/[^\d,]/g, '').replace(',', '.'));
-
-const calcularFretePorCep = (cep, subtotal) => {
-  // Proxy simples por prefixo do CEP (sem API real dos Correios)
-  const cepDigits = String(cep || '').replace(/\D/g, '');
-  if (cepDigits.length < 8) return 0;
-
-  const prefix = Number(cepDigits.slice(0, 1));
-  let frete = 0;
-
-  // - 0-3 => 18
-  // - 4-6 => 14
-  // - 7-9 => 22
-  if (prefix <= 3) frete = 18;
-  else if (prefix <= 6) frete = 14;
-  else frete = 22;
-
-  // Se carrinho baixo, mantém mínimo proporcional
-  frete = Math.max(frete, Math.round(subtotal * 0.08 * 100) / 100);
-  return frete;
-};
-
-
-const getCartProducts = () => {
-  const products = new Map();
-
-  cart.forEach((item) => {
+function productGroups() {
+  return Object.values(cart.reduce((groups, item) => {
     const key = `${item.name}|${item.price}|${item.size}`;
-    const current = products.get(key) || { product: item, quantity: 0 };
-    current.quantity += 1;
-    products.set(key, current);
-  });
+    groups[key] ||= { ...item, quantity: 0 };
+    groups[key].quantity++;
+    return groups;
+  }, {}));
+}
 
-  return [...products.values()];
-};
-
-const renderCart = () => {
-  const total = cart.reduce((sum, item) => sum + priceValue(item.price), 0);
-  const groupedItems = getCartProducts();
+function renderCart() {
+  const amount = total();
   cartCount.textContent = cart.length;
-  cartTotal.textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-  cartItems.innerHTML = cart.length
-    ? groupedItems.map(({ product, quantity }, index) => `
-      <article class="cart-item">
-        <div><h3>${product.name}</h3><p>${product.size} · ${product.price}</p></div>
-        <div class="cart-quantity">
-          <button class="cart-quantity-button" type="button" data-action="decrease" data-index="${index}" aria-label="Diminuir quantidade">−</button>
-          <span>${quantity}</span>
-          <button class="cart-quantity-button" type="button" data-action="increase" data-index="${index}" aria-label="Adicionar mais uma unidade">+</button>
-          <button class="cart-delete-button" type="button" data-action="delete" data-index="${index}" aria-label="Remover produto do carrinho">&#128465;</button>
-        </div>
-      </article>`).join('')
-    : '<p class="cart-empty">Seu carrinho está vazio.</p>';
-
-  cartCheckout.classList.toggle('is-disabled', cart.length === 0);
-  cartCheckout.disabled = cart.length === 0;
-};
-
-const openCart = () => {
-  renderCart();
-  registrationOverlay.hidden = true;
-  closeProfile();
-  cartModal.classList.add('is-open');
-  cartModal.setAttribute('aria-hidden', 'false');
-  cartTrigger.setAttribute('aria-expanded', 'true');
-  cartOverlay.hidden = false;
-  document.body.classList.add('cart-open');
-};
-
-const closeCart = () => {
-  cartModal.classList.remove('is-open');
-  cartModal.setAttribute('aria-hidden', 'true');
-  cartTrigger.setAttribute('aria-expanded', 'false');
-  cartOverlay.hidden = true;
-  document.body.classList.remove('cart-open');
-};
-
-const renderProfile = () => {
-  const customer = JSON.parse(localStorage.getItem('customer') || 'null');
-  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-
-  // Render seguro (sem innerHTML) para evitar XSS via localStorage
-  profileDetails.textContent = '';
-
-  if (!customer) {
+  cartTotal.textContent = money(amount);
+  quickCheckout.hidden = cart.length === 0;
+  quickCheckoutCount.textContent = cart.length;
+  cartItems.replaceChildren();
+  if (!cart.length) {
     const empty = document.createElement('p');
-    empty.className = 'profile-empty';
-    empty.textContent = 'Nenhum cadastro salvo ainda.';
-    profileDetails.appendChild(empty);
-  } else {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'profile-details';
-
-    const p1 = document.createElement('p');
-    p1.innerHTML = '<strong>Nome:</strong> '; // safe (constante)
-    p1.appendChild(document.createTextNode(customer.name || '—'));
-
-    const p2 = document.createElement('p');
-    p2.innerHTML = '<strong>Telefone:</strong> '; // safe (constante)
-    p2.appendChild(document.createTextNode(customer.phone || '—'));
-
-    const p3 = document.createElement('p');
-    p3.innerHTML = '<strong>E-mail:</strong> '; // safe (constante)
-    p3.appendChild(document.createTextNode(customer.email || '—'));
-
-    const p4 = document.createElement('p');
-    p4.innerHTML = '<strong>Endereço:</strong> '; // safe (constante)
-    p4.appendChild(document.createTextNode(customer.address || '—'));
-
-    const actions = document.createElement('div');
-    actions.className = 'profile-actions';
-    actions.style.display = 'flex';
-    actions.style.gap = '0.75rem';
-    actions.style.alignItems = 'center';
-    actions.style.marginTop = '1rem';
-
-    const editBtn = document.createElement('button');
-    editBtn.className = 'payment-edit';
-    editBtn.type = 'button';
-    editBtn.id = 'profileEditAddress';
-    editBtn.textContent = 'Editar cadastro';
-
-    const logoutBtn = document.createElement('button');
-    logoutBtn.className = 'delete-account';
-    logoutBtn.type = 'button';
-    logoutBtn.id = 'profileLogout';
-    logoutBtn.textContent = 'Sair';
-
-    actions.appendChild(editBtn);
-    actions.appendChild(logoutBtn);
-
-    wrapper.appendChild(p1);
-    wrapper.appendChild(p2);
-    wrapper.appendChild(p3);
-    wrapper.appendChild(p4);
-    wrapper.appendChild(actions);
-
-    profileDetails.appendChild(wrapper);
-  }
-
-  // Pedidos
-  orderHistory.textContent = '';
-
-  if (!Array.isArray(orders) || orders.length === 0) {
-    const empty = document.createElement('p');
-    empty.className = 'profile-empty';
-    empty.textContent = 'Você ainda não realizou pedidos.';
-    orderHistory.appendChild(empty);
+    empty.className = 'cart-empty';
+    empty.textContent = 'Seu carrinho está esperando por um café especial.';
+    cartItems.append(empty);
     return;
   }
-
-  // limitar para não travar render em caso de histórico grande
-  const safeOrders = orders.slice(0, 20);
-
-  const fragment = document.createDocumentFragment();
-  safeOrders.forEach((order) => {
-    const article = document.createElement('article');
-    article.className = 'order-history-item';
-
-    const h4 = document.createElement('h4');
-    h4.textContent = order?.date || '—';
-
-    const pItems = document.createElement('p');
-    const items = Array.isArray(order?.items) ? order.items : [];
-    pItems.textContent = items.map((it) => it?.name).filter(Boolean).join(', ') || '—';
-
-    const pTotal = document.createElement('p');
-    const strong = document.createElement('strong');
-    strong.textContent = order?.total || '—';
-    pTotal.appendChild(strong);
-
-    article.appendChild(h4);
-    article.appendChild(pItems);
-    article.appendChild(pTotal);
-
-    fragment.appendChild(article);
+  productGroups().forEach((item) => {
+    const row = document.createElement('article');
+    row.className = 'cart-item';
+    row.innerHTML = `<img class="cart-item-image" src="${products[item.name]?.image || 'grao.jpeg'}" alt=""><div><h3>${item.name}</h3><p>${item.size} · ${item.price}</p><div class="cart-quantity"><button type="button" data-action="minus" data-key="${item.name}">−</button><span>${item.quantity}</span><button type="button" data-action="plus" data-key="${item.name}">+</button></div></div><button class="cart-delete-button" type="button" aria-label="Remover ${item.name}" data-action="remove" data-key="${item.name}">×</button>`;
+    cartItems.append(row);
   });
+}
 
-  orderHistory.appendChild(fragment);
-};
-
-
-const updateUserGreeting = () => {
-  const customer = JSON.parse(localStorage.getItem('customer') || 'null');
+function updateAccount() {
+  const customer = getCustomer();
   const firstName = customer?.name?.trim().split(/\s+/)[0];
+  profileTrigger.textContent = firstName ? `Olá, ${firstName}` : 'Log-in';
+  profileTrigger.setAttribute('aria-label', firstName ? 'Abrir perfil' : 'Fazer login ou cadastro');
+  $('#heroProductsButton').innerHTML = firstName ? `Olá, ${firstName} <span>↘</span>` : `Escolher meu café <span>↘</span>`;
+}
 
-  // userGreeting (span no topo): removido para não repetir "Olá" duas vezes
-  userGreeting.hidden = true;
-  userGreeting.textContent = '';
-
-
-  // botão unificado no header (profileTrigger/id="profileTrigger")
-  if (profileTrigger) {
-    profileTrigger.textContent = firstName ? `Olá, ${firstName}` : 'Log-in';
+function renderProfile() {
+  const customer = getCustomer();
+  const details = $('#profileDetails');
+  const history = $('#orderHistory');
+  details.replaceChildren(); history.replaceChildren();
+  if (!customer) {
+    details.innerHTML = '<p class="profile-empty">Você ainda não tem dados cadastrados.</p>';
+    return;
   }
+  details.innerHTML = `<p><strong>${escapeHtml(customer.name)}</strong><br>${escapeHtml(customer.email)}<br>${escapeHtml(customer.phone)}<br>${escapeHtml(customer.address)} · ${escapeHtml(customer.cep)}</p><div class="profile-actions"><button id="editProfile" type="button">Editar dados</button><button id="logoutProfile" type="button">Sair desta conta</button></div>`;
+  const orders = storage.get('orders', []);
+  if (!orders.length) { history.innerHTML = '<p class="profile-empty">Ainda não há pedidos por aqui.</p>'; return; }
+  orders.slice(0, 5).forEach(order => {
+    const row = document.createElement('article');
+    row.className = 'order-history-item';
+    row.innerHTML = `<strong>${order.date}</strong><br>${order.items.map(item => item.name).join(', ')}<br><strong>${order.total}</strong>`;
+    history.append(row);
+  });
+}
 
-  // botão do hero ("Olá, NOME! Conheça nossos produtos" quando logado)
-  if (heroProductsButton) {
-    heroProductsButton.textContent = firstName
-      ? `Olá, ${firstName}! Conheça nossos produtos`
-      : 'Conheça nossos produtos';
-  }
-};
+function openCart() { closeProfile(); renderCart(); cartModal.classList.add('is-open'); cartModal.setAttribute('aria-hidden', 'false'); cartTrigger.setAttribute('aria-expanded', 'true'); cartOverlay.hidden = false; }
+function closeCart() { cartModal.classList.remove('is-open'); cartModal.setAttribute('aria-hidden', 'true'); cartTrigger.setAttribute('aria-expanded', 'false'); cartOverlay.hidden = true; }
+function openProfile() { closeCart(); renderProfile(); profileModal.classList.add('is-open'); profileModal.setAttribute('aria-hidden', 'false'); cartOverlay.hidden = false; }
+function closeProfile() { profileModal.classList.remove('is-open'); profileModal.setAttribute('aria-hidden', 'true'); cartOverlay.hidden = true; }
+function populateForm() {
+  const customer = getCustomer();
+  checkoutForm.reset();
+  if (!customer) return;
+  ['name', 'phone', 'cep', 'email', 'address'].forEach(key => { $(`[name="${key}"]`, checkoutForm).value = customer[key] || ''; });
+}
+function openRegistration(only = false) { registrationOnly = only; closeCart(); closeProfile(); populateForm(); setOverlay(registrationOverlay, true); $('#customerName').focus(); }
 
+function addProduct(card, direct = false) {
+  const name = $('h3', card).textContent;
+  const product = products[name] || { name, price: $('.price', card).textContent, size: $('.produto-tamanho', card).textContent };
+  cart.push({ name, price: product.price, size: product.size });
+  storage.set('cart', cart); renderCart();
+  if (direct) setOverlay($('#purchaseChoiceOverlay'), true);
+  else showToast(`${name} foi adicionado ao carrinho.`);
+}
 
+$$('.produto-toggle').forEach(button => button.addEventListener('click', () => {
+  const card = button.closest('.produto-card'); const details = $('.produto-detalhes', card); const isOpen = details.hidden;
+  details.hidden = !isOpen; button.setAttribute('aria-expanded', isOpen); $('span', button).textContent = isOpen ? '−' : '+';
+}));
+$$('.add-cart').forEach(button => button.addEventListener('click', () => addProduct(button.closest('.produto-card'))));
+$$('.buy-now').forEach(button => button.addEventListener('click', () => addProduct(button.closest('.produto-card'), true)));
 
-const openProfile = () => {
-  closeCart();
-  renderProfile();
-  profileModal.classList.add('is-open');
-  profileModal.setAttribute('aria-hidden', 'false');
-  profileTrigger.setAttribute('aria-expanded', 'true');
-  cartOverlay.hidden = false;
-};
-
-const closeProfile = () => {
-  profileModal.classList.remove('is-open');
-  profileModal.setAttribute('aria-hidden', 'true');
-  profileTrigger.setAttribute('aria-expanded', 'false');
-  cartOverlay.hidden = true;
-};
+cartItems.addEventListener('click', event => {
+  const button = event.target.closest('[data-action]'); if (!button) return;
+  const index = cart.findIndex(item => item.name === button.dataset.key);
+  if (index < 0) return;
+  if (button.dataset.action === 'plus') cart.push({ ...cart[index] });
+  if (button.dataset.action === 'minus') cart.splice(index, 1);
+  if (button.dataset.action === 'remove') cart = cart.filter(item => item.name !== button.dataset.key);
+  storage.set('cart', cart); renderCart();
+});
 
 cartTrigger.addEventListener('click', openCart);
-cartClose.addEventListener('click', closeCart);
-cartOverlay.addEventListener('click', () => {
-  closeCart();
-  closeProfile();
-});
-
-// Um único botão (id=profileTrigger) faz:
-// - se logado: abre perfil
-// - se não logado: abre cadastro
+$('#cartClose').addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', () => { closeCart(); closeProfile(); });
 profileTrigger.addEventListener('click', () => {
-  const savedCustomer = JSON.parse(localStorage.getItem('customer') || 'null');
-  if (savedCustomer) {
+  if (getCustomer()) {
     openProfile();
     return;
-
   }
-
-
-  registrationOnly = true;
-
-  closeCart();
-  closeProfile();
-  checkoutForm.reset();
-  registrationOverlay.hidden = false;
-  checkoutForm.querySelector('input').focus();
+  openRegistration(true);
+});
+$('#profileClose').addEventListener('click', closeProfile);
+$('#profileDetails').addEventListener('click', event => {
+  if (event.target.id === 'editProfile') openRegistration(true);
+  if (event.target.id === 'logoutProfile') { customer = null; updateAccount(); renderProfile(); showToast('Você saiu desta conta.'); }
 });
 
-profileClose.addEventListener('click', closeProfile);
-
-// Fechar perfil ao clicar em área não interativa do modal
-profileModal.addEventListener('click', (e) => {
-  const tag = e.target.tagName;
-  const isInteractive = ['BUTTON', 'A', 'INPUT', 'TEXTAREA', 'SELECT'].includes(tag)
-    || e.target.closest('button')
-    || e.target.closest('a')
-    || e.target.closest('input')
-    || e.target.closest('textarea')
-    || e.target.closest('select');
-  if (!isInteractive) {
-    closeProfile();
-  }
+$('#cartCheckout').addEventListener('click', () => {
+  if (!cart.length) return showToast('Adicione um café antes de continuar.');
+  if (!getCustomer()) return openRegistration(false);
+  closeCart(); const subtotal = total(), freight = shipping(getCustomer().cep, subtotal);
+  $('#paymentSubtotal').textContent = money(subtotal); $('#paymentShipping').textContent = money(freight); $('#paymentTotal').textContent = money(subtotal + freight);
+  setOverlay(paymentOverlay, true);
 });
 
-
-profileDetails.addEventListener('click', (event) => {
-  const editBtn = event.target.closest('#profileEditAddress');
-  if (editBtn) {
-    // Reabre o cadastro para o usuário editar (mesmo fluxo do botão de editar cadastro do pagamento)
-    closeProfile();
-    registrationOnly = true;
-    checkoutForm.reset();
-
-    const customer = JSON.parse(localStorage.getItem('customer') || 'null');
-    if (customer) {
-      checkoutForm.querySelector('#customerName').value = customer.name || '';
-      checkoutForm.querySelector('#customerPhone').value = customer.phone || '';
-      checkoutForm.querySelector('#customerCep').value = customer.cep || '';
-      checkoutForm.querySelector('#customerEmail').value = customer.email || '';
-      checkoutForm.querySelector('#customerAddress').value = customer.address || '';
-    }
-
-    registrationOverlay.hidden = false;
-    checkoutForm.querySelector('input')?.focus();
-    return;
-  }
-
-  if (!event.target.closest('.delete-account')) return;
-
-  const confirmed = window.confirm('Deseja excluir seus dados e histórico de pedidos deste dispositivo?');
-
-  if (!confirmed) return;
-
-  localStorage.removeItem('customer');
-  localStorage.removeItem('orders');
-  localStorage.removeItem('cart');
-  cart = [];
-  checkoutReady = false;
-  renderCart();
-  renderProfile();
-  updateUserGreeting();
+$('#registrationClose').addEventListener('click', () => setOverlay(registrationOverlay, false));
+$('#skipRegistration').addEventListener('click', () => setOverlay(registrationOverlay, false));
+registrationOverlay.addEventListener('click', event => { if (event.target === registrationOverlay) setOverlay(registrationOverlay, false); });
+checkoutForm.addEventListener('submit', event => {
+  event.preventDefault(); customer = Object.fromEntries(new FormData(checkoutForm)); updateAccount(); setOverlay(registrationOverlay, false);
+  if (registrationOnly) { openProfile(); showToast('Login realizado com sucesso.'); return; }
+  $('#cartCheckout').click();
 });
 
-cartCheckout.addEventListener('click', (event) => {
-  if (cart.length === 0) return;
-
-  const savedCustomer = JSON.parse(localStorage.getItem('customer') || 'null');
-
-  // Se não estiver logado, abre cadastro (precisa logar antes)
-  if (!savedCustomer) {
-    closeCart();
-    registrationOnly = false;
-    registrationOverlay.hidden = false;
-    checkoutForm.querySelector('input').focus();
-    return;
-  }
-
-  // Fecha o carrinho e abre o modal de finalização
-  closeCart();
-
-  const subtotal = cart.reduce((sum, item) => sum + priceValue(item.price), 0);
-
-  // Frete por CEP (proxy simples: sem API dos Correios)
-  const frete = calcularFretePorCep(savedCustomer?.cep, subtotal);
-  const total = subtotal + frete;
-
-
-  if (paymentSubtotal) paymentSubtotal.textContent = subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  if (paymentShipping) paymentShipping.textContent = frete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  if (paymentTotal) paymentTotal.textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-
-  if (paymentFinalizationOverlay) paymentFinalizationOverlay.hidden = false;
+$('#purchaseFinish').addEventListener('click', () => { setOverlay($('#purchaseChoiceOverlay'), false); $('#cartCheckout').click(); });
+$('#purchaseContinue').addEventListener('click', () => setOverlay($('#purchaseChoiceOverlay'), false));
+$('#purchaseChoiceOverlay').addEventListener('click', event => { if (event.target === $('#purchaseChoiceOverlay')) setOverlay($('#purchaseChoiceOverlay'), false); });
+$('#paymentFinalizationClose').addEventListener('click', () => setOverlay(paymentOverlay, false));
+$('#paymentFinalizationEdit').addEventListener('click', () => { setOverlay(paymentOverlay, false); openRegistration(true); });
+$('#paymentFinalizationConfirm').addEventListener('click', () => { $('#pixPaymentTotal').textContent = $('#paymentTotal').textContent; setOverlay(paymentOverlay, false); setOverlay(pixOverlay, true); });
+$('#pixPaymentClose').addEventListener('click', () => { setOverlay(pixOverlay, false); setOverlay(paymentOverlay, true); });
+$('#pixCopyButton').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('#pixCopyCode').textContent); showToast('Código Pix copiado.'); } catch { showToast('Selecione e copie o código Pix.'); }
 });
-
-
-
-
-
-
-registrationClose.addEventListener('click', () => {
-  registrationOnly = false;
-  registrationOverlay.hidden = true;
-});
-
-registrationOverlay.addEventListener('click', (event) => {
-  if (event.target === registrationOverlay) {
-    registrationOnly = false;
-    registrationOverlay.hidden = true;
-  }
-});
-
-skipRegistration.addEventListener('click', () => {
-  registrationOnly = false;
-  registrationOverlay.hidden = true;
-});
-
-purchaseFinish.addEventListener('click', () => {
-  purchaseChoiceOverlay.hidden = true;
-
-  // Se o cliente estiver logado, vai direto para a finalização (modal de pagamento)
-  cartCheckout.click();
-});
-
-
-// Fechar popup de sucesso
-if (successClose) {
-  successClose.addEventListener('click', () => {
-    successOverlay.hidden = true;
-  });
-}
-
-// ---------- Modal finalização do pagamento ----------
-const closePaymentFinalization = () => {
-  if (paymentFinalizationOverlay) paymentFinalizationOverlay.hidden = true;
-};
-
-if (paymentFinalizationClose) {
-  paymentFinalizationClose.addEventListener('click', closePaymentFinalization);
-}
-
-if (paymentFinalizationEdit) {
-  paymentFinalizationEdit.addEventListener('click', () => {
-    closePaymentFinalization();
-    // Reabre cadastro para editar
-    registrationOnly = true;
-    checkoutForm.reset();
-    registrationOverlay.hidden = false;
-    checkoutForm.querySelector('input')?.focus();
-  });
-}
-
-const pixPaymentOverlay = document.getElementById('pixPaymentOverlay');
-const pixPaymentClose = document.getElementById('pixPaymentClose');
-const pixPaymentDone = document.getElementById('pixPaymentDone');
-const pixPaymentTotal = document.getElementById('pixPaymentTotal');
-const pixQrImage = document.getElementById('pixQrImage');
-const pixCopyCode = document.getElementById('pixCopyCode');
-const pixCopyButton = document.getElementById('pixCopyButton');
-
-const closePixPayment = () => {
-  if (pixPaymentOverlay) pixPaymentOverlay.hidden = true;
-};
-
-if (pixPaymentClose) {
-  pixPaymentClose.addEventListener('click', () => {
-    closePixPayment();
-    if (paymentFinalizationOverlay) paymentFinalizationOverlay.hidden = false;
-  });
-}
-
-const getPixCodePlaceholder = () => 'COPIAR_PIX_AQUI';
-
-if (paymentFinalizationOverlay && paymentFinalizationConfirm) {
-  paymentFinalizationConfirm.addEventListener('click', () => {
-    // Usa o mesmo submit do formulário de cadastro: se já existe customer, envia direto.
-    // Se não existe, força abrir o cadastro.
-    const savedCustomer = JSON.parse(localStorage.getItem('customer') || 'null');
-
-    if (!savedCustomer) {
-      closePaymentFinalization();
-      registrationOnly = false;
-      registrationOverlay.hidden = false;
-      checkoutForm.querySelector('input')?.focus();
-      return;
-    }
-
-    // Atualiza valores do resumo com base no CEP atual
-    const subtotal = cart.reduce((sum, item) => sum + priceValue(item.price), 0);
-    const frete = calcularFretePorCep(savedCustomer.cep, subtotal);
-    const total = subtotal + frete;
-
-    // Prepara QR/código Pix (placeholder; você pode substituir depois por um valor real)
-    if (pixPaymentTotal) pixPaymentTotal.textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    if (pixCopyCode) pixCopyCode.textContent = getPixCodePlaceholder();
-
-    // Por enquanto, usamos uma imagem placeholder simples (não quebra layout).
-    // Troque o src por um QR real quando tiver a geração do Pix.
-    if (pixQrImage) pixQrImage.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
-        <rect width="180" height="180" fill="#fff"/>
-        <rect x="10" y="10" width="160" height="160" fill="#fff" stroke="#000" stroke-opacity="0.15"/>
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="#6f6f6f">QR Pix</text>
-      </svg>
-    `);
-
-    // Fecha modal de pagamento e abre modal do QR
-    if (paymentFinalizationOverlay) paymentFinalizationOverlay.hidden = true;
-    if (pixPaymentOverlay) pixPaymentOverlay.hidden = false;
-  });
-}
-
-if (pixPaymentDone) {
-  pixPaymentDone.addEventListener('click', () => {
-    // Aqui você pode, futuramente, validar o Pix. Por enquanto, apenas segue o fluxo de finalizar pedido.
-    closePixPayment();
-
-    // Solicita submit para registrar o pedido (usa o mesmo handler já existente)
-    checkoutForm.requestSubmit();
-  });
-}
-
-
-
-purchaseContinue.addEventListener('click', () => {
-
-  purchaseChoiceOverlay.hidden = true;
-
-  // Garante que o carrinho (lateral) não fique aberto, mas o produto clicado já está no carrinho.
-  closeCart();
-
-  // Atualiza o número do carrinho no topo
-  renderCart();
-
-  // Volta para a seção de produtos para continuar comprando
-  document.getElementById('sabores')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-
-purchaseChoiceOverlay.addEventListener('click', (event) => {
-  if (event.target === purchaseChoiceOverlay) {
-    purchaseChoiceOverlay.hidden = true;
-    closeCart();
-  }
-});
-
-checkoutForm.addEventListener('submit', async (event) => {
+$('#successClose').addEventListener('click', () => setOverlay($('#successOverlay'), false));
+quickCheckout.addEventListener('click', openCart);
+const menuToggle = $('#menuToggle'), topLinks = $('#topLinks');
+menuToggle.addEventListener('click', () => { const open = topLinks.classList.toggle('active'); menuToggle.setAttribute('aria-expanded', open); menuToggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu'); });
+$$('a', topLinks).forEach(link => link.addEventListener('click', () => topLinks.classList.remove('active')));
+// Navegação interna sem alterar a URL (evita que o endereço HTTPS ganhe hashes como #sabores).
+$$('a[href^="#"]').forEach(link => link.addEventListener('click', event => {
+  const target = $(link.getAttribute('href'));
+  if (!target) return;
   event.preventDefault();
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+if ('IntersectionObserver' in window) { const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: .12 }); $$('.reveal').forEach(element => observer.observe(element)); } else $$('.reveal').forEach(element => element.classList.add('is-visible'));
 
-  const customer = Object.fromEntries(new FormData(checkoutForm));
-  const submitButton = checkoutForm.querySelector('button[type="submit"]');
-
-  if (registrationOnly) {
-    localStorage.setItem('customer', JSON.stringify(customer));
-    registrationOnly = false;
-    registrationOverlay.hidden = true;
-    updateUserGreeting();
-    openProfile();
-    return;
-  }
-
-
-
-  submitButton.disabled = true;
-  submitButton.textContent = 'Enviando pedido...';
-
-
-  try {
-    const response = await fetch('https://formsubmit.co/ajax/cafedellagnolo@gmail.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        _subject: 'Novo pedido — Caffè Dell’Agnolo',
-        nome: customer.name,
-        telefone: customer.phone,
-        cep: customer.cep,
-        email: customer.email,
-        endereco: customer.address,
-        itens_do_pedido: orderItems,
-        total: cartTotal.textContent
-      })
-    });
-
-    if (!response.ok) throw new Error('Falha ao enviar o pedido');
-  } catch (error) {
-    alert('Não foi possível enviar o pedido. Tente novamente em alguns instantes.');
-    return;
-  } finally {
-    submitButton.disabled = false;
-    submitButton.textContent = 'Salvar e continuar';
-  }
-
-
-  // Salva o pedido no histórico do perfil
-  try {
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-
-    const orderItems = cart.map((it) => ({
-      name: it.name,
-      size: it.size,
-      price: it.price
-    }));
-
-    const newOrder = {
-      date: new Date().toLocaleDateString('pt-BR'),
-      items: orderItems,
-      total: cartTotal?.textContent || ''
-    };
-
-    localStorage.setItem('orders', JSON.stringify([newOrder, ...(Array.isArray(orders) ? orders : [])]));
-  } catch {
-    // não impede o fluxo do pedido
-  }
-
-  // Mantém cliente logado e reseta fluxo
-  localStorage.setItem('customer', JSON.stringify(customer));
-  checkoutReady = true;
-  registrationOverlay.hidden = true;
-  updateUserGreeting();
-
-  // Limpa o carrinho após finalizar
-  cart = [];
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCart();
-
-  // Atualiza o perfil (caso esteja aberto)
-  renderProfile();
-  openCart();
-});
-
-// Envia e-mail via formsubmit quando o cliente clica em "Finalizar pedido" (logado ou após cadastro)
-const enviarEmailCompra = async (customerName) => {
-  try {
-    await fetch('https://formsubmit.co/ajax/cafedellagnolo@gmail.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify({
-        _subject: 'Compra confirmada — Caffè Dell’Agnolo',
-        nome: customerName || 'Cliente',
-        mensagem: (() => {
-          const customer = JSON.parse(localStorage.getItem('customer') || 'null');
-          const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-          const lastOrder = orders[0];
-
-          const itemsText = lastOrder?.items
-            ? lastOrder.items.map((it) => `${it.name} (${it.size}) — ${it.price}`).join('\n')
-            : '—';
-
-          return [
-            'Cadastro do cliente:',
-            `Nome: ${customer?.name || '—'}`,
-            `Telefone: ${customer?.phone || '—'}`,
-            `E-mail: ${customer?.email || '—'}`,
-            `CEP: ${customer?.cep || '—'}`,
-            `Endereço: ${customer?.address || '—'}`,
-            '',
-            'Comprou:',
-            itemsText,
-            '',
-            `Total: ${lastOrder?.total || '—'}`
-          ].join('\n');
-        })()
-      })
-    });
-  } catch {
-    // Silencioso: não deve impedir o fluxo do pedido
-  }
-};
-
-
-
-cartItems.addEventListener('click', (event) => {
-  const quantityButton = event.target.closest('.cart-quantity-button, .cart-delete-button');
-  if (!quantityButton) return;
-
-  const { product } = getCartProducts()[Number(quantityButton.dataset.index)];
-
-  if (quantityButton.dataset.action === 'increase') {
-    cart.push({ ...product });
-  } else if (quantityButton.dataset.action === 'delete') {
-    cart = cart.filter((item) => (
-      item.name !== product.name || item.price !== product.price || item.size !== product.size
-    ));
-  } else {
-    const productIndex = cart.findIndex((item) => (
-      item.name === product.name && item.price === product.price && item.size === product.size
-    ));
-    cart.splice(productIndex, 1);
-  }
-
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCart();
-});
-
-renderCart();
-updateUserGreeting();
-
-document.querySelectorAll('.add-cart').forEach((button) => {
-  button.addEventListener('click', (event) => {
-    event.stopPropagation();
-
-    const card = button.closest('.produto-card');
-    const product = {
-      name: card.querySelector('h3').textContent,
-      price: card.querySelector('.price').textContent,
-      size: card.querySelector('.produto-tamanho').textContent
-    };
-
-cart.push(product);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCart();
-    updateUserGreeting();
-
-    button.textContent = 'Adicionado!';
-    button.classList.add('is-added');
-
-    setTimeout(() => {
-      button.textContent = 'Adicionar ao carrinho';
-      button.classList.remove('is-added');
-    }, 1600);
-  });
-});
-
-document.querySelectorAll('.buy-now').forEach((button) => {
-  button.addEventListener('click', (event) => {
-    event.stopPropagation();
-
-    const card = button.closest('.produto-card');
-    cart.push({
-      name: card.querySelector('h3').textContent,
-      price: card.querySelector('.price').textContent,
-      size: card.querySelector('.produto-tamanho').textContent
-    });
-    localStorage.setItem('cart', JSON.stringify(cart));
-
-    // Fecha o carrinho lateral e abre a escolha (finalizar agora x continuar comprando)
-    closeCart();
-    renderCart();
-
-    // Garante que a box de escolha apareça mesmo estando logado
-    purchaseChoiceOverlay.hidden = false;
-  });
-});
-
-// ================= FADE UP ANIMATION =================
-const fadeElements = document.querySelectorAll('.fade-up');
-
-if ('IntersectionObserver' in window) {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-
-  fadeElements.forEach((el) => observer.observe(el));
-} else {
-  // Fallback for older browsers
-  fadeElements.forEach((el) => el.classList.add('is-visible'));
-}
-
-// ================= CARROSSEL PARCEIROS =================
-// O carrossel funciona via animação CSS (esteiraMovimento) no .carousel-track
-
-
+renderCart(); updateAccount();
