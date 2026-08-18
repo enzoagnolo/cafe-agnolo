@@ -31,14 +31,26 @@ const cartTotal = $('#cartTotal');
 const checkoutForm = $('#checkoutForm');
 const profileModal = $('#profileModal');
 const profileTrigger = $('#profileTrigger');
+const mobileProfileTrigger = $('#mobileProfileTrigger');
 const registrationOverlay = $('#registrationOverlay');
 const paymentOverlay = $('#paymentFinalizationOverlay');
 const pixOverlay = $('#pixPaymentOverlay');
+const successOverlay = $('#successOverlay');
 const toast = $('#toast');
 const quickCheckout = $('#quickCheckout');
 const quickCheckoutCount = $('#quickCheckoutCount');
+const topLinks = $('#topLinks');
+const menuToggle = $('#menuToggle');
 
 $('#footerYear').textContent = new Date().getFullYear();
+
+// Mantém a rolagem do fundo travada enquanto qualquer painel/modal está aberto,
+// evitando o "scroll fantasma" atrás dos overlays em telas de celular.
+const openOverlays = new Set();
+function trackOverlay(id, isOpen) {
+  if (isOpen) openOverlays.add(id); else openOverlays.delete(id);
+  document.body.classList.toggle('modal-open', openOverlays.size > 0);
+}
 
 function money(value) { return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 function priceValue(price) { return Number(String(price).replace(/[^\d,]/g, '').replace(',', '.')) || 0; }
@@ -50,7 +62,7 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2600);
 }
 function getCustomer() { return customer; }
-function setOverlay(element, open) { element.hidden = !open; }
+function setOverlay(element, open) { element.hidden = !open; trackOverlay(element.id, open); }
 function total() { return cart.reduce((sum, item) => sum + priceValue(item.price), 0); }
 function shipping(cep, subtotal) {
   const first = Number(String(cep || '').replace(/\D/g, '').charAt(0));
@@ -92,8 +104,12 @@ function renderCart() {
 function updateAccount() {
   const customer = getCustomer();
   const firstName = customer?.name?.trim().split(/\s+/)[0];
-  profileTrigger.textContent = firstName ? `Olá, ${firstName}` : 'Log-in';
+  const label = firstName ? `Olá, ${firstName}` : 'Log-in';
+  profileTrigger.textContent = label;
   profileTrigger.setAttribute('aria-label', firstName ? 'Abrir perfil' : 'Fazer login ou cadastro');
+  if (mobileProfileTrigger) {
+    mobileProfileTrigger.textContent = firstName ? `Olá, ${firstName}` : 'Entrar / Cadastrar';
+  }
   $('#heroProductsButton').innerHTML = firstName ? `Olá, ${firstName} <span>↘</span>` : `Escolher meu café <span>↘</span>`;
 }
 
@@ -117,17 +133,21 @@ function renderProfile() {
   });
 }
 
-function openCart() { closeProfile(); renderCart(); cartModal.classList.add('is-open'); cartModal.setAttribute('aria-hidden', 'false'); cartTrigger.setAttribute('aria-expanded', 'true'); cartOverlay.hidden = false; }
-function closeCart() { cartModal.classList.remove('is-open'); cartModal.setAttribute('aria-hidden', 'true'); cartTrigger.setAttribute('aria-expanded', 'false'); cartOverlay.hidden = true; }
-function openProfile() { closeCart(); renderProfile(); profileModal.classList.add('is-open'); profileModal.setAttribute('aria-hidden', 'false'); cartOverlay.hidden = false; }
-function closeProfile() { profileModal.classList.remove('is-open'); profileModal.setAttribute('aria-hidden', 'true'); cartOverlay.hidden = true; }
+function openCart() { closeProfile(); renderCart(); cartModal.classList.add('is-open'); cartModal.setAttribute('aria-hidden', 'false'); cartTrigger.setAttribute('aria-expanded', 'true'); cartOverlay.hidden = false; trackOverlay('cartModal', true); }
+function closeCart() { cartModal.classList.remove('is-open'); cartModal.setAttribute('aria-hidden', 'true'); cartTrigger.setAttribute('aria-expanded', 'false'); cartOverlay.hidden = true; trackOverlay('cartModal', false); }
+function openProfile() { closeCart(); renderProfile(); profileModal.classList.add('is-open'); profileModal.setAttribute('aria-hidden', 'false'); cartOverlay.hidden = false; trackOverlay('profileModal', true); }
+function closeProfile() { profileModal.classList.remove('is-open'); profileModal.setAttribute('aria-hidden', 'true'); cartOverlay.hidden = true; trackOverlay('profileModal', false); }
 function populateForm() {
   const customer = getCustomer();
   checkoutForm.reset();
   if (!customer) return;
   ['name', 'phone', 'cep', 'email', 'address'].forEach(key => { $(`[name="${key}"]`, checkoutForm).value = customer[key] || ''; });
 }
-function openRegistration(only = false) { registrationOnly = only; closeCart(); closeProfile(); populateForm(); setOverlay(registrationOverlay, true); $('#customerName').focus(); }
+function openRegistration(only = false) {
+  registrationOnly = only; closeCart(); closeProfile();
+  if (topLinks.classList.contains('active')) { topLinks.classList.remove('active'); menuToggle.setAttribute('aria-expanded', 'false'); }
+  populateForm(); setOverlay(registrationOverlay, true); $('#customerName').focus();
+}
 
 function addProduct(card, direct = false) {
   const name = $('h3', card).textContent;
@@ -158,13 +178,15 @@ cartItems.addEventListener('click', event => {
 cartTrigger.addEventListener('click', openCart);
 $('#cartClose').addEventListener('click', closeCart);
 cartOverlay.addEventListener('click', () => { closeCart(); closeProfile(); });
-profileTrigger.addEventListener('click', () => {
+function handleProfileTriggerClick() {
   if (getCustomer()) {
     openProfile();
     return;
   }
   openRegistration(true);
-});
+}
+profileTrigger.addEventListener('click', handleProfileTriggerClick);
+if (mobileProfileTrigger) mobileProfileTrigger.addEventListener('click', handleProfileTriggerClick);
 $('#profileClose').addEventListener('click', closeProfile);
 $('#profileDetails').addEventListener('click', event => {
   if (event.target.id === 'editProfile') openRegistration(true);
@@ -198,9 +220,24 @@ $('#pixPaymentClose').addEventListener('click', () => { setOverlay(pixOverlay, f
 $('#pixCopyButton').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText($('#pixCopyCode').textContent); showToast('Código Pix copiado.'); } catch { showToast('Selecione e copie o código Pix.'); }
 });
-$('#successClose').addEventListener('click', () => setOverlay($('#successOverlay'), false));
+
+// Confirmação do pagamento: registra o pedido, esvazia o carrinho e mostra a tela de sucesso.
+$('#pixPaymentDone').addEventListener('click', () => {
+  const orders = storage.get('orders', []);
+  orders.unshift({
+    date: new Date().toLocaleDateString('pt-BR'),
+    items: productGroups(),
+    total: $('#pixPaymentTotal').textContent
+  });
+  storage.set('orders', orders.slice(0, 20));
+  cart = [];
+  storage.set('cart', cart);
+  renderCart();
+  setOverlay(pixOverlay, false);
+  setOverlay(successOverlay, true);
+});
+$('#successClose').addEventListener('click', () => setOverlay(successOverlay, false));
 quickCheckout.addEventListener('click', openCart);
-const menuToggle = $('#menuToggle'), topLinks = $('#topLinks');
 menuToggle.addEventListener('click', () => { const open = topLinks.classList.toggle('active'); menuToggle.setAttribute('aria-expanded', open); menuToggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu'); });
 $$('a', topLinks).forEach(link => link.addEventListener('click', () => topLinks.classList.remove('active')));
 // Navegação interna sem alterar a URL (evita que o endereço HTTPS ganhe hashes como #sabores).
