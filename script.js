@@ -1,3 +1,4 @@
+// //-------------------- SELETORES E ESTADO --------------------
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
@@ -72,6 +73,7 @@ $('#footerYear').textContent = new Date().getFullYear();
 
 // Mantém a rolagem do fundo travada enquanto qualquer painel/modal está aberto,
 // evitando o "scroll fantasma" atrás dos overlays em telas de celular.
+// //-------------------- UTILITARIOS E FRETE --------------------
 const openOverlays = new Set();
 function trackOverlay(id, isOpen) {
   if (isOpen) openOverlays.add(id); else openOverlays.delete(id);
@@ -94,12 +96,26 @@ function showValidation(message) {
 function getCustomer() { return customer; }
 function setOverlay(element, open) { element.hidden = !open; trackOverlay(element.id, open); }
 function total() { return cart.reduce((sum, item) => sum + priceValue(item.price), 0); }
-function shipping(cep, subtotal) {
-  const first = Number(String(cep || '').replace(/\D/g, '').charAt(0));
-  if (!Number.isFinite(first)) return 14;
-  return Math.max(first <= 3 ? 18 : first <= 6 ? 14 : 22, Math.round(subtotal * .08 * 100) / 100);
+const shippingOrigin = { latitude: -23.4205, longitude: -51.9333 };
+const shippingMinimum = 8;
+const shippingRatePerKm = .5;
+function distanceInKm(origin, destination) {
+  const earthRadiusKm = 6371;
+  const latitudeDelta = (destination.latitude - origin.latitude) * Math.PI / 180;
+  const longitudeDelta = (destination.longitude - origin.longitude) * Math.PI / 180;
+  const originLatitude = origin.latitude * Math.PI / 180;
+  const destinationLatitude = destination.latitude * Math.PI / 180;
+  const value = Math.sin(latitudeDelta / 2) ** 2 + Math.cos(originLatitude) * Math.cos(destinationLatitude) * Math.sin(longitudeDelta / 2) ** 2;
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(value), Math.sqrt(1 - value));
+}
+function shipping(customer) {
+  if (normalizeText(customer.city) === 'maringa') return 0;
+  if (!customer.latitude || !customer.longitude) return shippingMinimum;
+  const distance = distanceInKm(shippingOrigin, { latitude: customer.latitude, longitude: customer.longitude });
+  return Math.max(shippingMinimum, Math.round(distance * shippingRatePerKm * 100) / 100);
 }
 
+// //-------------------- VALIDACAO DE CLIENTE --------------------
 function normalizeText(value = '') { return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
 function isValidEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(value).trim()); }
 function isValidPhone(value) {
@@ -156,10 +172,25 @@ async function validateCustomer(customer) {
     const address = normalizeText(customer.address);
     const street = normalizeText(result.logradouro);
     if (street && !address.includes(street)) return genericValidationMessage;
+    customer.city = result.localidade || '';
+    try {
+      const coordinatesResponse = await fetch(`https://brasilapi.com.br/api/cep/v2/${cep}`);
+      if (coordinatesResponse.ok) {
+        const coordinatesResult = await coordinatesResponse.json();
+        const coordinates = coordinatesResult.location?.coordinates;
+        customer.latitude = Number(coordinates?.latitude);
+        customer.longitude = Number(coordinates?.longitude);
+        if (!Number.isFinite(customer.latitude) || !Number.isFinite(customer.longitude)) {
+          delete customer.latitude;
+          delete customer.longitude;
+        }
+      }
+    } catch {}
   } catch { return genericValidationMessage; }
   return '';
 }
 
+// //-------------------- CARRINHO E PERFIL --------------------
 function productGroups() {
   return Object.values(cart.reduce((groups, item) => {
     const key = `${item.name}|${item.price}|${item.size}`;
@@ -225,6 +256,7 @@ function renderProfile() {
   });
 }
 
+// //-------------------- CADASTRO E ENDERECO --------------------
 function openCart() { closeProfile(); renderCart(); cartModal.classList.add('is-open'); cartModal.setAttribute('aria-hidden', 'false'); cartTrigger.setAttribute('aria-expanded', 'true'); cartOverlay.hidden = false; trackOverlay('cartModal', true); }
 function closeCart() { cartModal.classList.remove('is-open'); cartModal.setAttribute('aria-hidden', 'true'); cartTrigger.setAttribute('aria-expanded', 'false'); cartOverlay.hidden = true; trackOverlay('cartModal', false); }
 function openProfile() { closeCart(); renderProfile(); profileModal.classList.add('is-open'); profileModal.setAttribute('aria-hidden', 'false'); cartOverlay.hidden = false; trackOverlay('profileModal', true); }
@@ -273,6 +305,7 @@ function openRegistration(only = false) {
   populateForm(); setOverlay(registrationOverlay, true); $('#customerName').focus();
 }
 
+// //-------------------- PRODUTOS E EVENTOS DO CARRINHO --------------------
 function addProduct(card, direct = false) {
   const name = $('h3', card).textContent;
   const product = products[name] || { name, price: $('.price', card).textContent, size: $('.produto-tamanho', card).textContent };
@@ -317,10 +350,11 @@ $('#profileDetails').addEventListener('click', event => {
   if (event.target.id === 'logoutProfile') { customer = null; updateAccount(); renderProfile(); showToast('Você saiu desta conta.'); }
 });
 
+// //-------------------- CHECKOUT E PAGAMENTO --------------------
 $('#cartCheckout').addEventListener('click', () => {
   if (!cart.length) return showToast('Adicione um café antes de continuar.');
   if (!getCustomer()) return openRegistration(false);
-  closeCart(); const subtotal = total(), freight = shipping(getCustomer().cep, subtotal);
+  closeCart(); const subtotal = total(), freight = shipping(getCustomer());
   $('#paymentSubtotal').textContent = money(subtotal); $('#paymentShipping').textContent = money(freight); $('#paymentTotal').textContent = money(subtotal + freight);
   setOverlay(paymentOverlay, true);
 });
@@ -358,6 +392,7 @@ $('#pixCopyButton').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText($('#pixCopyCode').textContent); showToast('Código Pix copiado.'); } catch { showToast('Selecione e copie o código Pix.'); }
 });
 
+// //-------------------- COMPROVANTE E FINALIZACAO --------------------
 // Confirmação do pagamento: registra o pedido, esvazia o carrinho e mostra a tela de sucesso.
 $('#pixPaymentDone').addEventListener('click', () => {
   const orders = storage.get('orders', []);
@@ -406,6 +441,7 @@ proofSend.addEventListener('click', async () => {
   setOverlay(proofOverlay, false);
   setOverlay(successOverlay, true);
 });
+// //-------------------- NAVEGACAO E INICIALIZACAO --------------------
 $('#proofClose').addEventListener('click', () => setOverlay(proofOverlay, false));
 $('#successClose').addEventListener('click', () => setOverlay(successOverlay, false));
 $('#partnerPrevious').addEventListener('click', () => partnerCarousel.scrollBy({ left: -partnerCarousel.clientWidth * .72, behavior: 'smooth' }));

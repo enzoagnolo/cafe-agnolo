@@ -10,7 +10,7 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https://viacep.com.br; base-uri 'self'; object-src 'none'; form-action 'self'"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self' https://viacep.com.br https://brasilapi.com.br; base-uri 'self'; object-src 'none'; form-action 'self'"
     />
     <title>Caffè Dell'Agnolo — Café com história</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- //-------------------- FUNDO E NAVEGACAO -------------------- -->
     <div class="grain" aria-hidden="true"></div>
     <div id="topo"></div>
     <header class="site-header" id="siteHeader">
@@ -75,7 +76,9 @@
         </button>
       </div>
     </header>
+    <!-- //-------------------- CONTEUDO PRINCIPAL -------------------- -->
     <main>
+      <!-- //-------------------- HERO -------------------- -->
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
           <p class="eyebrow">Maringá, Paraná · desde 1960</p>
@@ -127,6 +130,7 @@
           <span> ↓ </span>
         </div>
       </section>
+      <!-- //-------------------- ESSENCIA DA MARCA -------------------- -->
       <section class="manifesto reveal" id="essencia">
         <p class="eyebrow">01 — A nossa essência</p>
         <div class="manifesto-grid">
@@ -168,13 +172,14 @@
           </div>
         </div>
       </section>
+      <!-- //-------------------- PROCESSO -------------------- -->
       <section class="process reveal" id="avisos">
         <div class="process-image">
           <img src="familia.jpeg" alt="Café sendo preparado" />
           <span> Do grão à memória </span>
         </div>
         <div class="process-content">
-          <p class="eyebrow">02 — Sem atalhos</p>
+          <p class="eyebrow">02 — Nossa hisória</p>
           <h2>
             Origem, tempo
             <br />
@@ -207,6 +212,7 @@
           </div>
         </div>
       </section>
+      <!-- //-------------------- COLECAO DE CAFE -------------------- -->
       <section class="collection reveal" id="sabores">
         <div class="section-heading">
           <div>
@@ -368,9 +374,10 @@
           </article>
         </div>
       </section>
+      <!-- //-------------------- PARCEIROS -------------------- -->
       <section class="partners reveal" id="parceiros">
         <div class="partners-title">
-          <p class="eyebrow">04 — Onde tomar</p>
+          <p class="eyebrow">04 — Seja um parceiro também!</p>
           <h2>
             Boas histórias
             <br />
@@ -401,6 +408,7 @@
           </div>
         </div>
       </section>
+      <!-- //-------------------- CARROSSEL DE PARCEIROS -------------------- -->
       <section
         class="partner-showcase reveal"
         aria-labelledby="partnerShowcaseTitle"
@@ -446,8 +454,8 @@
             >
               Logo
             </div>
-            <strong>Empório Aurora</strong>
-            <span>Mercado e produtos artesanais</span>
+            <strong>OS Brasil Investimentos</strong>
+            <span>Estratégia de investimento e planejamento para imoveis, veículos e cartas contempladas</span>
           </article>
           <article class="partner-card partner-card-dark">
             <span class="partner-card-number">02 / 05</span>
@@ -457,8 +465,8 @@
             >
               Logo
             </div>
-            <strong>Casa do Pão</strong>
-            <span>Padaria de fermentação natural</span>
+            <strong>Em breve</strong>
+            <span>Em breve</span>
           </article>
           <article class="partner-card">
             <span class="partner-card-number">03 / 05</span>
@@ -468,8 +476,8 @@
             >
               Logo
             </div>
-            <strong>Bistrô Central</strong>
-            <span>Café, almoço e encontros</span>
+            <strong>Em breve</strong>
+            <span>Em breve</span>
           </article>
           <article class="partner-card partner-card-clay">
             <span class="partner-card-number">04 / 05</span>
@@ -479,8 +487,8 @@
             >
               Logo
             </div>
-            <strong>Ateliê do Grão</strong>
-            <span>Presentes e experiências</span>
+            <strong>Em breve</strong>
+            <span>Em breve</span>
           </article>
           <article class="partner-card partner-card-dark">
             <span class="partner-card-number">05 / 05</span>
@@ -490,12 +498,13 @@
             >
               Logo
             </div>
-            <strong>Mercado do Lago</strong>
-            <span>Sabores locais de Maringá</span>
+            <strong>Em breve</strong>
+            <span>Em breve</span>
           </article>
         </div>
       </section>
     </main>
+    <!-- //-------------------- RODAPE -------------------- -->
     <footer class="site-footer">
       <div class="site-footer-main">
         <div class="footer-brand-block">
@@ -534,7 +543,9 @@
         <span>Torra artesanal desde 1960</span>
       </div>
     </footer>
+    <!-- //-------------------- CARRINHO -------------------- -->
     <div class="cart-overlay" id="cartOverlay" hidden></div>
+    <!-- //-------------------- PERFIL DO CLIENTE -------------------- -->
     <aside
       class="cart-modal"
       id="cartModal"
@@ -604,6 +615,7 @@
         </section>
       </div>
     </aside>
+    <!-- //-------------------- CADASTRO E ENDERECO -------------------- -->
     <div
       class="registration-overlay modal-overlay"
       id="registrationOverlay"
@@ -789,6 +801,7 @@
         </button>
       </form>
     </div>
+    <!-- //-------------------- VALIDACAO -------------------- -->
     <div class="validation-overlay modal-overlay" id="validationOverlay" hidden>
       <div class="validation-modal modal-card">
         <span class="validation-mark">!</span>
@@ -800,6 +813,7 @@
         </button>
       </div>
     </div>
+    <!-- //-------------------- ESCOLHA POS-COMPRA -------------------- -->
     <div
       class="purchase-choice-overlay modal-overlay"
       id="purchaseChoiceOverlay"
@@ -828,6 +842,7 @@
         </div>
       </div>
     </div>
+    <!-- //-------------------- RESUMO DO PAGAMENTO -------------------- -->
     <div
       class="payment-finalization-overlay modal-overlay"
       id="paymentFinalizationOverlay"
@@ -864,8 +879,8 @@
           </div>
         </div>
         <p class="payment-note">
-          O valor da entrega é estimado pelo CEP e será confirmado antes do
-          envio.
+          Entrega grátis em Maringá. Para outras cidades, o frete é calculado
+          pela distância do CEP, com valor mínimo de R$ 8,00.
         </p>
         <div class="choice-actions">
           <button
@@ -886,6 +901,7 @@
         </div>
       </div>
     </div>
+    <!-- //-------------------- PAGAMENTO PIX -------------------- -->
     <div
       class="payment-finalization-overlay modal-overlay"
       id="pixPaymentOverlay"
@@ -928,6 +944,7 @@
         </button>
       </div>
     </div>
+    <!-- //-------------------- COMPROVANTE -------------------- -->
     <div class="proof-overlay modal-overlay" id="proofOverlay" hidden>
       <div class="proof-modal modal-card">
         <div class="modal-header">
@@ -964,6 +981,7 @@
         </button>
       </div>
     </div>
+    <!-- //-------------------- CONFIRMACAO -------------------- -->
     <div class="success-overlay modal-overlay" id="successOverlay" hidden>
       <div class="success-modal modal-card">
         <p class="eyebrow">Pedido recebido</p>
@@ -981,6 +999,7 @@
         </button>
       </div>
     </div>
+    <!-- //-------------------- ACOES FIXAS E SCRIPTS -------------------- -->
     <button
       class="quick-checkout"
       id="quickCheckout"

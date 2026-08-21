@@ -1,3 +1,4 @@
+// //-------------------- DEPENDENCIAS E CONFIGURACAO --------------------
 require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
@@ -59,6 +60,7 @@ if (!orderColumns.includes('condominium_house_number')) database.exec('ALTER TAB
 if (!orderColumns.includes('unit_number')) database.exec('ALTER TABLE orders ADD COLUMN unit_number TEXT');
 if (!orderColumns.includes('customer_cpf')) database.exec("ALTER TABLE orders ADD COLUMN customer_cpf TEXT NOT NULL DEFAULT ''");
 
+// //-------------------- CATALOGO INICIAL E UPLOADS --------------------
 const seedProducts = database.prepare('INSERT OR IGNORE INTO products (name, size, price, image) VALUES (?, ?, ?, ?)');
 [
   ['Café em Grãos', '250g', 'R$ 29,90', 'grao.jpeg'],
@@ -77,6 +79,7 @@ const upload = multer({
   fileFilter: (_request, file, callback) => callback(null, /^(image\/(jpeg|png|webp)|application\/pdf)$/.test(file.mimetype))
 });
 
+// //-------------------- MIDDLEWARES E SEGURANCA --------------------
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '100kb' }));
 app.use(session({
@@ -121,6 +124,7 @@ function isValidCpf(value) {
   return digit === Number(digits[10]);
 }
 
+// //-------------------- AUTENTICACAO ADMINISTRATIVA --------------------
 app.get('/admin', (request, response) => {
   if (request.query.login === '1') return request.session.destroy(() => response.sendFile(path.join(root, 'server', 'admin.html')));
   response.sendFile(path.join(root, 'server', 'admin.html'));
@@ -138,6 +142,7 @@ app.post('/admin/login', loginLimiter, async (request, response) => {
 app.post('/admin/logout', (request, response) => request.session.destroy(() => response.json({ ok: true })));
 app.get('/admin/api/me', (request, response) => request.session.isAdmin ? response.json({ ok: true }) : response.sendStatus(401));
 app.get('/admin/api/products', requireAdmin, (_request, response) => response.json({ products: database.prepare('SELECT * FROM products ORDER BY id').all() }));
+// //-------------------- PRODUTOS ADMINISTRATIVOS --------------------
 app.post('/admin/api/products', requireAdmin, (request, response) => {
   const product = { name: clean(request.body.name, 120), size: clean(request.body.size, 30), price: clean(request.body.price, 30), image: clean(request.body.image, 180) };
   if (!product.name || !product.size || !product.price) return response.status(400).json({ error: 'Nome, tamanho e preco sao obrigatorios.' });
@@ -161,6 +166,7 @@ app.delete('/admin/api/products/:id', requireAdmin, (request, response) => {
   response.json({ ok: true });
 });
 
+// //-------------------- RECEBIMENTO DE PEDIDOS --------------------
 app.post('/api/orders', upload.single('proof'), (request, response) => {
   let order;
   try {
@@ -189,6 +195,7 @@ app.post('/api/orders', upload.single('proof'), (request, response) => {
   }
 });
 
+// //-------------------- PEDIDOS E CLIENTES ADMINISTRATIVOS --------------------
 app.get('/admin/api/orders', requireAdmin, (_request, response) => {
   const rows = database.prepare('SELECT * FROM orders ORDER BY id DESC LIMIT 100').all();
   const orders = rows.map(row => ({ ...row, customer_address: [row.residence_type, `${row.customer_address}, ${row.address_number}`, row.unit_number ? `Unidade: ${row.unit_number}` : '', row.reference ? `Ref.: ${row.reference}` : ''].filter(Boolean).join(' · '), items: JSON.parse(row.items_json) }));
@@ -231,5 +238,7 @@ app.get('/admin/api/orders/:id/proof', requireAdmin, (request, response) => {
   response.download(order.proof_path, order.proof_name || 'comprovante');
 });
 
+// //-------------------- INICIALIZACAO --------------------
 const port = Number(process.env.PORT) || 3000;
-app.listen(port, () => console.log(`Caffe Dell'Agnolo em http://localhost:${port}`));
+if (require.main === module) app.listen(port, () => console.log(`Caffe Dell'Agnolo em http://localhost:${port}`));
+module.exports = app;
