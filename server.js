@@ -16,14 +16,12 @@ const root = __dirname;
 const dataDir = process.env.VERCEL ? path.join('/tmp', 'cafe-agnolo') : path.join(root, 'data');
 const proofDir = path.join(dataDir, 'proofs');
 const adminEmail = process.env.ADMIN_EMAIL || 'enzousava@gmail.com';
+const sessionSecret = process.env.SESSION_SECRET;
+const adminPassword = process.env.ADMIN_PASSWORD;
+const adminConfigured = Boolean(sessionSecret && adminPassword && adminPassword.length >= 12);
 fs.mkdirSync(proofDir, { recursive: true });
 
-if (!process.env.SESSION_SECRET || !process.env.ADMIN_PASSWORD) {
-  throw new Error('Configure SESSION_SECRET e ADMIN_PASSWORD no arquivo .env.');
-}
-if (process.env.ADMIN_PASSWORD.length < 12) {
-  throw new Error('ADMIN_PASSWORD precisa ter pelo menos 12 caracteres.');
-}
+if (!adminConfigured) console.warn('Painel administrativo indisponivel: configure SESSION_SECRET e ADMIN_PASSWORD (minimo de 12 caracteres).');
 
 const database = new DatabaseSync(path.join(dataDir, 'cafe-agnolo.sqlite'));
 database.exec('PRAGMA journal_mode = WAL');
@@ -68,7 +66,7 @@ const seedProducts = database.prepare('INSERT OR IGNORE INTO products (name, siz
   ['Café Outono', '250g', 'R$ 32,90', 'outono.jpeg']
 ].forEach(product => seedProducts.run(...product));
 
-const adminPasswordHash = bcrypt.hashSync(process.env.ADMIN_PASSWORD, 12);
+const adminPasswordHash = adminConfigured ? bcrypt.hashSync(adminPassword, 12) : null;
 const allowedStatuses = new Set(['pending', 'confirmed', 'sent', 'cancelled']);
 const upload = multer({
   storage: multer.diskStorage({
@@ -83,7 +81,7 @@ const upload = multer({
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '100kb' }));
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: sessionSecret || crypto.randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
   cookie: { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', maxAge: 8 * 60 * 60 * 1000 }
@@ -130,6 +128,7 @@ app.get('/admin', (request, response) => {
   response.sendFile(path.join(root, 'server', 'admin.html'));
 });
 app.post('/admin/login', loginLimiter, async (request, response) => {
+  if (!adminConfigured) return response.status(503).json({ error: 'Painel administrativo nao configurado no servidor.' });
   const email = clean(request.body.email, 254).toLowerCase();
   const password = String(request.body.password || '');
   if (email !== adminEmail.toLowerCase() || !(await bcrypt.compare(password, adminPasswordHash))) return response.status(401).json({ error: 'E-mail ou senha invalidos.' });

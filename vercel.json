@@ -6,6 +6,18 @@
       "use": "@vercel/node"
     }
   ],
+  "functions": {
+    "server.js": {
+      "includeFiles": [
+        "index.html",
+        "style.css",
+        "script.js",
+        "*.jpeg",
+        "*.jpg",
+        "*.png"
+      ]
+    }
+  },
   "routes": [
     {
       "src": "/(.*)",
