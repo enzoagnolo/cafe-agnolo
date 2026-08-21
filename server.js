@@ -13,7 +13,7 @@ const multer = require('multer');
 
 const app = express();
 const root = __dirname;
-const dataDir = path.join(root, 'data');
+const dataDir = process.env.VERCEL ? path.join('/tmp', 'cafe-agnolo') : path.join(root, 'data');
 const proofDir = path.join(dataDir, 'proofs');
 const adminEmail = process.env.ADMIN_EMAIL || 'enzousava@gmail.com';
 fs.mkdirSync(proofDir, { recursive: true });
