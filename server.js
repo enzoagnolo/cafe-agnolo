@@ -7,7 +7,6 @@ const { DatabaseSync } = require('node:sqlite');
 const express = require('express');
 const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
-const session = require('express-session');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 
@@ -68,6 +67,16 @@ const seedProducts = database.prepare('INSERT OR IGNORE INTO products (name, siz
 
 const adminPasswordHash = adminConfigured ? bcrypt.hashSync(adminPassword, 12) : null;
 const allowedStatuses = new Set(['pending', 'confirmed', 'sent', 'cancelled']);
+function sessionSignature(value) { return crypto.createHmac('sha256', sessionSecret || '').update(value).digest('base64url'); }
+function adminCookie(value, maxAge = 8 * 60 * 60) { return `caffe_admin=${value}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`; }
+function hasAdminSession(request) {
+  const token = request.headers.cookie?.match(/(?:^|;\s*)caffe_admin=([^;]+)/)?.[1];
+  if (!token) return false;
+  const [payload, signature] = token.split('.');
+  if (payload !== 'admin' || !signature) return false;
+  const expected = sessionSignature(payload);
+  return signature.length === expected.length && crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+}
 const upload = multer({
   storage: multer.diskStorage({
     destination: proofDir,
@@ -80,18 +89,13 @@ const upload = multer({
 // //-------------------- MIDDLEWARES E SEGURANCA --------------------
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '100kb' }));
-app.use(session({
-  secret: sessionSecret || crypto.randomBytes(32).toString('hex'),
-  resave: false,
-  saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', maxAge: 8 * 60 * 60 * 1000 }
-}));
+app.use((request, _response, next) => { request.isAdmin = hasAdminSession(request); next(); });
 app.use((request, response, next) => request.path.startsWith('/server') || request.path.startsWith('/data') ? response.sendStatus(404) : next());
 app.use(express.static(root, { dotfiles: 'deny', index: 'index.html' }));
 
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-8', legacyHeaders: false });
 function requireAdmin(request, response, next) {
-  if (request.session.isAdmin) return next();
+  if (request.isAdmin) return next();
   return response.status(401).json({ error: 'AUTH_REQUIRED' });
 }
 function clean(value, max = 300) { return String(value ?? '').trim().slice(0, max); }
@@ -124,7 +128,7 @@ function isValidCpf(value) {
 
 // //-------------------- AUTENTICACAO ADMINISTRATIVA --------------------
 app.get('/admin', (request, response) => {
-  if (request.query.login === '1') return request.session.destroy(() => response.sendFile(path.join(root, 'server', 'admin.html')));
+  if (request.query.login === '1') response.setHeader('Set-Cookie', adminCookie('', 0));
   response.sendFile(path.join(root, 'server', 'admin.html'));
 });
 app.post('/admin/login', loginLimiter, async (request, response) => {
@@ -132,14 +136,11 @@ app.post('/admin/login', loginLimiter, async (request, response) => {
   const email = clean(request.body.email, 254).toLowerCase();
   const password = String(request.body.password || '');
   if (email !== adminEmail.toLowerCase() || !(await bcrypt.compare(password, adminPasswordHash))) return response.status(401).json({ error: 'E-mail ou senha invalidos.' });
-  request.session.regenerate(error => {
-    if (error) return response.status(500).json({ error: 'Nao foi possivel iniciar a sessao.' });
-    request.session.isAdmin = true;
-    response.json({ ok: true });
-  });
+  response.setHeader('Set-Cookie', adminCookie(`admin.${sessionSignature('admin')}`));
+  response.json({ ok: true });
 });
-app.post('/admin/logout', (request, response) => request.session.destroy(() => response.json({ ok: true })));
-app.get('/admin/api/me', (request, response) => request.session.isAdmin ? response.json({ ok: true }) : response.sendStatus(401));
+app.post('/admin/logout', (_request, response) => { response.setHeader('Set-Cookie', adminCookie('', 0)); response.json({ ok: true }); });
+app.get('/admin/api/me', (request, response) => request.isAdmin ? response.json({ ok: true }) : response.sendStatus(401));
 app.get('/admin/api/products', requireAdmin, (_request, response) => response.json({ products: database.prepare('SELECT * FROM products ORDER BY id').all() }));
 // //-------------------- PRODUTOS ADMINISTRATIVOS --------------------
 app.post('/admin/api/products', requireAdmin, (request, response) => {

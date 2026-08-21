@@ -12,6 +12,7 @@
         "index.html",
         "style.css",
         "script.js",
+        "server/admin.html",
         "*.jpeg",
         "*.jpg",
         "*.png"
