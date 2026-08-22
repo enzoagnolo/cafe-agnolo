@@ -19,5 +19,3 @@
 ## Deploy na Vercel
 
 No projeto da Vercel, configure a variavel `NODE_ENV=production` e faça o deploy normalmente. O projeto exige Node.js 22.5 ou superior.
-
-Para enviar os pedidos por email, configure também `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` e `MAIL_FROM` nas variaveis de ambiente da Vercel. Para o Gmail, use uma senha de app, nao a senha normal da conta. O destinatario padrao e `cafedellagnolo@gmail.com` e pode ser alterado com `ORDER_EMAIL_TO`.
