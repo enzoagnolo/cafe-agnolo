@@ -83,6 +83,29 @@ function showValidation(message) {
   validationMessage.textContent = message;
   setOverlay(validationOverlay, true);
 }
+function replaceArrowText() {
+  const icons = {
+    '↗': 'M3 13L13 3M6 3h7v7',
+    '↘': 'M3 3l10 10M7 13h6V7',
+    '↓': 'M8 2v11M4 9l4 4 4-4',
+    '⌄': 'M3 5l5 5 5-5'
+  };
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  textNodes.forEach(node => {
+    const key = node.nodeValue.trim();
+    if (!icons[key]) return;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'icon-arrow');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', icons[key]);
+    svg.append(path);
+    node.replaceWith(svg);
+  });
+}
 function getCustomer() { return customer; }
 function setOverlay(element, open) { element.hidden = !open; trackOverlay(element.id, open); }
 function total() { return cart.reduce((sum, item) => sum + priceValue(item.price), 0); }
@@ -221,7 +244,7 @@ function updateAccount() {
   if (mobileProfileTrigger) {
     mobileProfileTrigger.textContent = firstName ? `Olá, ${firstName}` : 'Entrar / Cadastrar';
   }
-  $('#heroProductsButton').innerHTML = firstName ? `Olá, ${firstName} <span>↘</span>` : `Escolher meu café <span>↘</span>`;
+  $('#heroProductsButton').innerHTML = firstName ? `Olá, ${firstName}` : 'Escolher meu café';
 }
 
 function renderProfile() {
@@ -421,7 +444,7 @@ Para concluir o pedido, envie o comprovante do Pix nesta conversa.`;
 proofSend.addEventListener('click', async () => {
   if (!pendingOrder) return;
   proofSend.disabled = true;
-  proofSend.innerHTML = 'Enviando pedido...<span>↗</span>';
+  proofSend.textContent = 'Enviando pedido...';
   const formData = new FormData();
   formData.append('order', JSON.stringify(pendingOrder));
   try {
@@ -429,7 +452,7 @@ proofSend.addEventListener('click', async () => {
     if (!response.ok) throw new Error('Não foi possível registrar o pedido no servidor.');
   } catch (error) {
     proofSend.disabled = false;
-    proofSend.innerHTML = 'Enviar comprovante pelo WhatsApp<span>↗</span>';
+    proofSend.textContent = 'Enviar comprovante pelo WhatsApp';
     showToast(error.message);
     return;
   }
@@ -456,4 +479,5 @@ $$('a[href^="#"]').forEach(link => link.addEventListener('click', event => {
 }));
 if ('IntersectionObserver' in window) { const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: .12 }); $$('.reveal').forEach(element => observer.observe(element)); } else $$('.reveal').forEach(element => element.classList.add('is-visible'));
 
+replaceArrowText();
 renderCart(); updateAccount();
