@@ -19,10 +19,7 @@ let cart = storage.get('cart', []);
 let registrationOnly = false;
 let pendingOrder = null;
 let toastTimer;
-// Dados pessoais ficam apenas na memória desta aba e são descartados ao sair ou atualizar.
-// Remove qualquer cadastro salvo pela versão anterior do site.
-let customer = null;
-localStorage.removeItem('customer');
+let customer = storage.get('customer', null);
 
 const cartTrigger = $('#cartTrigger');
 const cartModal = $('#cartModal');
@@ -393,7 +390,7 @@ if (mobileProfileTrigger) mobileProfileTrigger.addEventListener('click', handleP
 $('#profileClose').addEventListener('click', closeProfile);
 $('#profileDetails').addEventListener('click', event => {
   if (event.target.id === 'editProfile') openRegistration(true);
-  if (event.target.id === 'logoutProfile') { customer = null; updateAccount(); renderProfile(); showToast('Você saiu desta conta.'); }
+  if (event.target.id === 'logoutProfile') { customer = null; localStorage.removeItem('customer'); updateAccount(); renderProfile(); showToast('Você saiu desta conta.'); }
 });
 
 // //-------------------- CHECKOUT E PAGAMENTO --------------------
@@ -420,6 +417,11 @@ checkoutForm.addEventListener('submit', async event => {
   if (validationMessage) return showValidation(validationMessage);
   formCustomer.phone = formatBrazilPhone(formCustomer.phone);
   formCustomer.cpf = formatCpf(formCustomer.cpf);
+  const savedCustomer = storage.get('customer', null);
+  if (!savedCustomer) {
+    const shouldSave = window.confirm('Deseja salvar seus dados neste dispositivo para não precisar preenchê-los novamente?');
+    if (shouldSave) storage.set('customer', formCustomer);
+  } else storage.set('customer', formCustomer);
   customer = formCustomer; updateAccount(); setOverlay(registrationOverlay, false);
   if (registrationOnly) { openProfile(); showToast('Login realizado com sucesso.'); return; }
   $('#cartCheckout').click();
