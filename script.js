@@ -408,6 +408,25 @@ proofFile.addEventListener('change', () => {
   proofFileName.textContent = file ? file.name : 'Selecionar comprovante';
   proofSend.disabled = !file;
 });
+function whatsappOrderMessage(order, fileName) {
+  const customer = order.customer;
+  const items = order.items.map(item => `${item.quantity}x ${item.name} (${item.size}) - ${item.price}`).join('\n');
+  return `Olá! Acabei de realizar o pagamento e estou enviando o comprovante.
+
+DADOS DO CLIENTE
+Nome: ${customer.name}
+E-mail: ${customer.email}
+CPF: ${customer.cpf}
+Telefone: ${customer.phone}
+Endereço: ${customer.address}, ${customer.addressNumber}
+Tipo de residência: ${customer.residenceType}
+CEP: ${customer.cep}
+${customer.unitNumber ? `Unidade: ${customer.unitNumber}\n` : ''}${customer.reference ? `Referência: ${customer.reference}\n` : ''}
+PEDIDO
+${items}
+Total: ${order.total}
+Comprovante: ${fileName}`;
+}
 proofSend.addEventListener('click', async () => {
   const file = proofFile.files[0];
   if (!file || !pendingOrder) return;
@@ -425,8 +444,16 @@ proofSend.addEventListener('click', async () => {
     showToast(error.message);
     return;
   }
-  const message = encodeURIComponent(`Olá! Acabei de realizar o pagamento do meu pedido e estou enviando o comprovante: ${file.name}`);
-  window.open(`https://wa.me/5544999166089?text=${message}`, '_blank', 'noopener');
+  const message = whatsappOrderMessage(pendingOrder, file.name);
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ title: 'Comprovante do pedido', text: message, files: [file] });
+    } catch (error) {
+      if (error.name !== 'AbortError') window.open(`https://wa.me/5544999166089?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+    }
+  } else {
+    window.open(`https://wa.me/5544999166089?text=${encodeURIComponent(`${message}\n\nAnexe este comprovante na conversa do WhatsApp.`)}`, '_blank', 'noopener');
+  }
   pendingOrder = null;
   setOverlay(proofOverlay, false);
   setOverlay(successOverlay, true);
