@@ -7,6 +7,7 @@ const { DatabaseSync } = require('node:sqlite');
 const express = require('express');
 const helmet = require('helmet');
 const multer = require('multer');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const root = __dirname;
@@ -66,6 +67,35 @@ const upload = multer({
   fileFilter: (_request, file, callback) => callback(null, /^(image\/(jpeg|png|webp)|application\/pdf)$/.test(file.mimetype))
 });
 
+const mailTransport = process.env.SMTP_HOST ? nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: process.env.SMTP_SECURE === 'true',
+  auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+}) : null;
+
+function orderEmailText(order, customer, orderId) {
+  const items = order.items.map(item => `${item.quantity}x ${clean(item.name, 120)} (${clean(item.size, 30)}) - ${clean(item.price, 30)}`).join('\n');
+  return [
+    `Novo pedido #${orderId}`,
+    '',
+    'DADOS DO CLIENTE',
+    `Nome: ${clean(customer.name, 120)}`,
+    `E-mail: ${clean(customer.email, 254)}`,
+    `CPF: ${clean(customer.cpf, 14)}`,
+    `Telefone: ${clean(customer.phone, 30)}`,
+    `Endereco: ${clean(customer.address, 300)}, ${clean(customer.addressNumber, 10)}`,
+    `Tipo de residencia: ${clean(customer.residenceType, 20)}`,
+    `CEP: ${clean(customer.cep, 12)}`,
+    `Unidade: ${clean(customer.unitNumber, 10) || 'Nao informado'}`,
+    `Referencia: ${clean(customer.reference, 160) || 'Nao informado'}`,
+    '',
+    'PEDIDO',
+    items,
+    `Total: ${clean(order.total, 30)}`
+  ].join('\n');
+}
+
 // //-------------------- MIDDLEWARES E SEGURANCA --------------------
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '100kb' }));
@@ -101,7 +131,7 @@ function isValidCpf(value) {
 }
 
 // //-------------------- RECEBIMENTO DE PEDIDOS --------------------
-app.post('/api/orders', upload.single('proof'), (request, response) => {
+app.post('/api/orders', upload.single('proof'), async (request, response) => {
   let order;
   try {
     order = JSON.parse(request.body.order || '{}');
@@ -122,6 +152,15 @@ app.post('/api/orders', upload.single('proof'), (request, response) => {
     const result = database.prepare(`INSERT INTO orders (customer_name, customer_email, customer_cpf, customer_phone, customer_address, customer_cep, residence_type, address_number, reference, condominium_house_number, unit_number, total, items_json, proof_name, proof_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
       clean(customer.name, 120), clean(customer.email, 254), clean(customer.cpf, 14), clean(customer.phone, 30), clean(customer.address, 300), clean(customer.cep, 12), clean(customer.residenceType, 20), clean(customer.addressNumber, 10), clean(customer.reference, 160), null, clean(customer.unitNumber, 10), clean(order.total, 30), JSON.stringify(items), request.file?.originalname ? clean(request.file.originalname, 180) : null, request.file?.path || null
     );
+    if (!mailTransport) throw new Error('SMTP nao configurado.');
+    await mailTransport.sendMail({
+      from: process.env.MAIL_FROM || process.env.SMTP_USER,
+      to: process.env.ORDER_EMAIL_TO || 'cafedellagnolo@gmail.com',
+      replyTo: clean(customer.email, 254),
+      subject: `Novo pedido #${result.lastInsertRowid} - ${clean(customer.name, 120)}`,
+      text: orderEmailText(order, customer, result.lastInsertRowid),
+      attachments: request.file ? [{ filename: request.file.originalname, path: request.file.path }] : []
+    });
     response.status(201).json({ ok: true, id: result.lastInsertRowid });
   } catch (error) {
     if (request.file?.path) fs.rmSync(request.file.path, { force: true });
