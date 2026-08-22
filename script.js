@@ -44,8 +44,6 @@ const quickCheckout = $('#quickCheckout');
 const quickCheckoutCount = $('#quickCheckoutCount');
 const topLinks = $('#topLinks');
 const menuToggle = $('#menuToggle');
-const proofFile = $('#proofFile');
-const proofFileName = $('#proofFileName');
 const proofSend = $('#proofSend');
 const partnerCarousel = $('#partnerCarousel');
 const validationOverlay = $('#validationOverlay');
@@ -398,17 +396,9 @@ $('#pixPaymentDone').addEventListener('click', () => {
   storage.set('cart', cart);
   renderCart();
   setOverlay(pixOverlay, false);
-  proofFile.value = '';
-  proofFileName.textContent = 'Selecionar comprovante';
-  proofSend.disabled = true;
   setOverlay(proofOverlay, true);
 });
-proofFile.addEventListener('change', () => {
-  const file = proofFile.files[0];
-  proofFileName.textContent = file ? file.name : 'Selecionar comprovante';
-  proofSend.disabled = !file;
-});
-function whatsappOrderMessage(order, fileName) {
+function whatsappOrderMessage(order) {
   const customer = order.customer;
   const items = order.items.map(item => `Café: ${item.name} | Quantidade: ${item.quantity} | Tamanho: ${item.size} | Preço: ${item.price}`).join('\n');
   return `Olá! Acabei de realizar o pagamento e estou enviando o comprovante.
@@ -426,16 +416,14 @@ ${customer.unitNumber ? `Unidade: ${customer.unitNumber}\n` : ''}${customer.refe
 PEDIDO
 ${items}
 Total: ${order.total}
-Comprovante: ${fileName}`;
+Para concluir o pedido, envie o comprovante do Pix nesta conversa.`;
 }
 proofSend.addEventListener('click', async () => {
-  const file = proofFile.files[0];
-  if (!file || !pendingOrder) return;
+  if (!pendingOrder) return;
   proofSend.disabled = true;
   proofSend.innerHTML = 'Enviando pedido...<span>↗</span>';
   const formData = new FormData();
   formData.append('order', JSON.stringify(pendingOrder));
-  formData.append('proof', file);
   try {
     const response = await fetch('/api/orders', { method: 'POST', body: formData });
     if (!response.ok) throw new Error('Não foi possível registrar o pedido no servidor.');
@@ -445,24 +433,8 @@ proofSend.addEventListener('click', async () => {
     showToast(error.message);
     return;
   }
-  const message = whatsappOrderMessage(pendingOrder, file.name);
-  if (navigator.canShare?.({ files: [file] })) {
-    try {
-      await navigator.share({ title: 'Comprovante do pedido', text: message, files: [file] });
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        proofSend.disabled = false;
-        proofSend.innerHTML = 'Enviar comprovante pelo WhatsApp<span>↗</span>';
-        return;
-      }
-      showToast('Não foi possível compartilhar a imagem. Tente novamente.');
-      proofSend.disabled = false;
-      proofSend.innerHTML = 'Enviar comprovante pelo WhatsApp<span>↗</span>';
-      return;
-    }
-  } else {
-    window.open(`https://wa.me/5544999166089?text=${encodeURIComponent(`${message}\n\nAnexe a imagem do comprovante nesta conversa.`)}`, '_blank', 'noopener');
-  }
+  const message = whatsappOrderMessage(pendingOrder);
+  window.location.href = `https://wa.me/5544999166089?text=${encodeURIComponent(message)}`;
   pendingOrder = null;
   setOverlay(proofOverlay, false);
   setOverlay(successOverlay, true);
