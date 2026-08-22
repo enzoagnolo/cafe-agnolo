@@ -46,6 +46,18 @@ const topLinks = $('#topLinks');
 const menuToggle = $('#menuToggle');
 const proofSend = $('#proofSend');
 const partnerCarousel = $('#partnerCarousel');
+const productDetailOverlay = $('#productDetailOverlay');
+const productDetailImage = $('#productDetailImage');
+const productDetailKind = $('#productDetailKind');
+const productDetailName = $('#productDetailName');
+const productDetailDescription = $('#productDetailDescription');
+const productDetailSize = $('#productDetailSize');
+const productDetailFeatures = $('#productDetailFeatures');
+const productDetailPrice = $('#productDetailPrice');
+const productDetailOldPrice = $('#productDetailOldPrice');
+const productDetailBuy = $('#productDetailBuy');
+const productDetailAdd = $('#productDetailAdd');
+let selectedProductCard = null;
 const validationOverlay = $('#validationOverlay');
 const validationMessage = $('#validationMessage');
 const residenceType = $('#customerResidenceType');
@@ -326,11 +338,34 @@ function addProduct(card, direct = false) {
   else showToast(`${name} foi adicionado ao carrinho.`);
 }
 
-$$('.produto-toggle').forEach(button => button.addEventListener('click', () => {
-  const card = button.closest('.produto-card'); const details = $('.produto-detalhes', card); const isOpen = details.hidden;
-  details.hidden = !isOpen; button.setAttribute('aria-expanded', isOpen); $('span', button).textContent = isOpen ? '−' : '+';
-}));
-$$('.add-cart').forEach(button => button.addEventListener('click', () => addProduct(button.closest('.produto-card'))));
+const productFeatures = {
+  'Café em Grãos': 'Alta qualidade, corpo equilibrado e versatilidade para coados, espresso e métodos especiais.',
+  'Café Sabor da Roça': 'Perfil encorpado e marcante, com notas terrosas e doçura natural.',
+  'Café Outono': 'Aromas de canela e especiarias, com equilíbrio entre intensidade e suavidade.'
+};
+function openProductDetail(card) {
+  selectedProductCard = card;
+  productDetailImage.src = $('.produto-image', card).src;
+  productDetailImage.alt = $('.produto-image', card).alt;
+  productDetailKind.textContent = $('.product-kind', card).textContent.trim();
+  productDetailName.textContent = $('h3', card).textContent.trim();
+  productDetailDescription.textContent = $('.produto-desc', card).textContent.trim();
+  productDetailSize.textContent = $('.produto-tamanho', card).textContent.trim();
+  productDetailFeatures.textContent = productFeatures[productDetailName.textContent] || productDetailDescription.textContent;
+  productDetailPrice.textContent = $('.price', card).textContent.trim();
+  productDetailOldPrice.textContent = $('.old-price', card).textContent.trim();
+  setOverlay(productDetailOverlay, true);
+}
+$$('.product-open').forEach(imageArea => {
+  imageArea.addEventListener('click', () => openProductDetail(imageArea.closest('.produto-card')));
+  imageArea.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); imageArea.click(); }
+  });
+});
+$('#productDetailClose').addEventListener('click', () => setOverlay(productDetailOverlay, false));
+productDetailOverlay.addEventListener('click', event => { if (event.target === productDetailOverlay) setOverlay(productDetailOverlay, false); });
+productDetailBuy.addEventListener('click', () => { setOverlay(productDetailOverlay, false); addProduct(selectedProductCard, true); });
+productDetailAdd.addEventListener('click', () => { addProduct(selectedProductCard); setOverlay(productDetailOverlay, false); });
 $$('.buy-now').forEach(button => button.addEventListener('click', () => addProduct(button.closest('.produto-card'), true)));
 
 cartItems.addEventListener('click', event => {

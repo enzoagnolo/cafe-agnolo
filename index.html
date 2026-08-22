@@ -226,16 +226,9 @@
         </div>
         <div class="products-grid">
           <article class="produto-card" data-product="grãos">
-            <div class="product-image-wrap">
+            <div class="product-image-wrap product-open" tabindex="0" role="button" aria-label="Ver detalhes do Café em Grãos">
               <span class="product-index"> 01 </span>
               <img class="produto-image" src="grao.jpeg" alt="Café em Grãos" />
-              <button
-                class="quick-add add-cart"
-                type="button"
-                aria-label="Adicionar Café em Grãos"
-              >
-                +
-              </button>
             </div>
             <div class="produto-content">
               <div class="product-line">
@@ -246,20 +239,6 @@
               <p class="produto-desc">
                 Aroma preservado e frescor máximo para o seu método favorito.
               </p>
-              <button
-                class="produto-toggle"
-                type="button"
-                aria-expanded="false"
-              >
-                Notas & preparo
-                <span> + </span>
-              </button>
-              <div class="produto-detalhes" hidden>
-                <p>
-                  Alta qualidade, corpo equilibrado e versatilidade para coados,
-                  espresso e métodos especiais.
-                </p>
-              </div>
               <div class="product-bottom">
                 <strong class="price"> R$ 29,90 </strong>
                 <span class="old-price"> R$ 34,90 </span>
@@ -272,20 +251,13 @@
             </div>
           </article>
           <article class="produto-card featured" data-product="roça">
-            <div class="product-image-wrap">
+            <div class="product-image-wrap product-open" tabindex="0" role="button" aria-label="Ver detalhes do Café Sabor da Roça">
               <span class="product-index"> 02 </span>
               <img
                 class="produto-image"
                 src="sabor da roca.jpeg"
                 alt="Café Sabor da Roça"
               />
-              <button
-                class="quick-add add-cart"
-                type="button"
-                aria-label="Adicionar Café Sabor da Roça"
-              >
-                +
-              </button>
             </div>
             <div class="produto-content">
               <div class="product-line">
@@ -297,20 +269,6 @@
                 Notas terrosas e doçura natural, como o café coado de
                 antigamente.
               </p>
-              <button
-                class="produto-toggle"
-                type="button"
-                aria-expanded="false"
-              >
-                Notas & preparo
-                <span> + </span>
-              </button>
-              <div class="produto-detalhes" hidden>
-                <p>
-                  Perfil encorpado e marcante. Uma escolha acolhedora para
-                  coador, prensa e cafeteira.
-                </p>
-              </div>
               <div class="product-bottom">
                 <strong class="price"> R$ 29,90 </strong>
                 <span class="old-price"> R$ 32,90 </span>
@@ -323,17 +281,10 @@
             </div>
           </article>
           <article class="produto-card" data-product="outono">
-            <div class="product-image-wrap">
+            <div class="product-image-wrap product-open" tabindex="0" role="button" aria-label="Ver detalhes do Café Outono">
               <span class="product-index"> 03 </span>
               <span class="product-badge"> Mais pedido </span>
               <img class="produto-image" src="outono.jpeg" alt="Café Outono" />
-              <button
-                class="quick-add add-cart"
-                type="button"
-                aria-label="Adicionar Café Outono"
-              >
-                +
-              </button>
             </div>
             <div class="produto-content">
               <div class="product-line">
@@ -344,20 +295,6 @@
               <p class="produto-desc">
                 Canela e especiarias em uma xícara macia, quente e envolvente.
               </p>
-              <button
-                class="produto-toggle"
-                type="button"
-                aria-expanded="false"
-              >
-                Notas & preparo
-                <span> + </span>
-              </button>
-              <div class="produto-detalhes" hidden>
-                <p>
-                  Aromas acolhedores, com equilíbrio entre intensidade e
-                  suavidade.
-                </p>
-              </div>
               <div class="product-bottom">
                 <strong class="price"> R$ 32,90 </strong>
                 <span class="old-price"> R$ 34,90 </span>
@@ -371,6 +308,39 @@
           </article>
         </div>
       </section>
+      <!-- //-------------------- DETALHE DO PRODUTO -------------------- -->
+      <div class="product-detail-overlay modal-overlay" id="productDetailOverlay" hidden>
+        <article class="product-detail-modal">
+          <header class="product-detail-header">
+            <a class="brand" href="#topo" aria-label="Caffè Dell'Agnolo, página inicial">
+              <span>Caffè <em>Dell'Agnolo</em></span>
+            </a>
+            <button class="icon-button" id="productDetailClose" type="button" aria-label="Fechar produto">×</button>
+          </header>
+          <div class="product-detail-body">
+            <div class="product-detail-image-wrap">
+              <img id="productDetailImage" src="" alt="" />
+            </div>
+            <div class="product-detail-copy">
+              <p class="eyebrow" id="productDetailKind"></p>
+              <h2 id="productDetailName"></h2>
+              <p class="product-detail-description" id="productDetailDescription"></p>
+              <div class="product-detail-specs">
+                <div><span>Peso</span><strong id="productDetailSize"></strong></div>
+                <div><span>Características</span><strong id="productDetailFeatures"></strong></div>
+              </div>
+              <div class="product-detail-purchase">
+                <strong class="price" id="productDetailPrice"></strong>
+                <span class="old-price" id="productDetailOldPrice"></span>
+              </div>
+              <div class="product-detail-actions">
+                <button class="button button-dark" id="productDetailBuy" type="button">Comprar <span aria-hidden="true">+</span></button>
+                <button class="button button-outline" id="productDetailAdd" type="button">Adicionar ao carrinho <span aria-hidden="true">+</span></button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
       <!-- //-------------------- PARCEIROS -------------------- -->
       <section class="partners reveal" id="parceiros">
         <div class="partners-title">
