@@ -415,12 +415,12 @@ function whatsappOrderMessage(order, fileName) {
 
 DADOS DO CLIENTE
 Nome: ${customer.name}
-E-mail: ${customer.email}
 CPF: ${customer.cpf}
 Telefone: ${customer.phone}
 Endereço: ${customer.address}, ${customer.addressNumber}
 Tipo de residência: ${customer.residenceType}
 CEP: ${customer.cep}
+${customer.city ? `Cidade: ${customer.city}\n` : ''}${customer.condominiumHouseNumber ? `Número da casa: ${customer.condominiumHouseNumber}\n` : ''}
 ${customer.unitNumber ? `Unidade: ${customer.unitNumber}\n` : ''}${customer.reference ? `Referência: ${customer.reference}\n` : ''}
 PEDIDO
 ${items}
@@ -445,15 +445,7 @@ proofSend.addEventListener('click', async () => {
     return;
   }
   const message = whatsappOrderMessage(pendingOrder, file.name);
-  if (navigator.canShare?.({ files: [file] })) {
-    try {
-      await navigator.share({ title: 'Comprovante do pedido', text: message, files: [file] });
-    } catch (error) {
-      if (error.name !== 'AbortError') window.open(`https://wa.me/5544999166089?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
-    }
-  } else {
-    window.open(`https://wa.me/5544999166089?text=${encodeURIComponent(`${message}\n\nAnexe este comprovante na conversa do WhatsApp.`)}`, '_blank', 'noopener');
-  }
+  window.location.href = `https://wa.me/5544999166089?text=${encodeURIComponent(`${message}\n\nAnexe o comprovante nesta conversa.`)}`;
   pendingOrder = null;
   setOverlay(proofOverlay, false);
   setOverlay(successOverlay, true);
