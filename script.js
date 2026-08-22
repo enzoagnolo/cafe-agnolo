@@ -410,15 +410,17 @@ proofFile.addEventListener('change', () => {
 });
 function whatsappOrderMessage(order, fileName) {
   const customer = order.customer;
-  const items = order.items.map(item => `${item.quantity}x ${item.name} (${item.size}) - ${item.price}`).join('\n');
+  const items = order.items.map(item => `Café: ${item.name} | Quantidade: ${item.quantity} | Tamanho: ${item.size} | Preço: ${item.price}`).join('\n');
   return `Olá! Acabei de realizar o pagamento e estou enviando o comprovante.
 
 DADOS DO CLIENTE
-Nome: ${customer.name}
+Nome completo: ${customer.name}
 CPF: ${customer.cpf}
 Telefone: ${customer.phone}
-Endereço: ${customer.address}, ${customer.addressNumber}
-Tipo de residência: ${customer.residenceType}
+Endereço: ${customer.address}
+Tipo de local: ${customer.residenceType}
+Número do local/casa: ${customer.addressNumber}
+Número do apartamento: ${customer.unitNumber || 'Não se aplica'}
 CEP: ${customer.cep}
 ${customer.unitNumber ? `Unidade: ${customer.unitNumber}\n` : ''}${customer.reference ? `Referência: ${customer.reference}\n` : ''}
 PEDIDO
@@ -444,7 +446,23 @@ proofSend.addEventListener('click', async () => {
     return;
   }
   const message = whatsappOrderMessage(pendingOrder, file.name);
-  window.location.href = `https://wa.me/5544999166089?text=${encodeURIComponent(`${message}\n\nAnexe o comprovante nesta conversa.`)}`;
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ title: 'Comprovante do pedido', text: message, files: [file] });
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        proofSend.disabled = false;
+        proofSend.innerHTML = 'Enviar comprovante pelo WhatsApp<span>↗</span>';
+        return;
+      }
+      showToast('Não foi possível compartilhar a imagem. Tente novamente.');
+      proofSend.disabled = false;
+      proofSend.innerHTML = 'Enviar comprovante pelo WhatsApp<span>↗</span>';
+      return;
+    }
+  } else {
+    window.open(`https://wa.me/5544999166089?text=${encodeURIComponent(`${message}\n\nAnexe a imagem do comprovante nesta conversa.`)}`, '_blank', 'noopener');
+  }
   pendingOrder = null;
   setOverlay(proofOverlay, false);
   setOverlay(successOverlay, true);
