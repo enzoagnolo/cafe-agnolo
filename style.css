@@ -1054,6 +1054,11 @@ textarea {
   min-height:86px;
   height:86px
 }
+#customerAddress {
+  min-height:48px;
+  height:48px;
+  resize:none
+}
 .checkout-form>.button {
   width:100%
 }
