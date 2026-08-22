@@ -96,16 +96,6 @@ button {
   text-transform:uppercase;
   letter-spacing:.07em
 }
-.admin-orders-link {
-  color:var(--clay);
-  font:700 10px var(--mono);
-  letter-spacing:.08em;
-  text-decoration:none;
-  text-transform:uppercase
-}
-.admin-orders-link:hover {
-  color:#f8f5ed
-}
 .main-nav a {
   opacity:.8
 }
@@ -1277,9 +1267,6 @@ textarea {
   }
   .profile-trigger {
     order:2
-  }
-  .admin-orders-link {
-    order:3
   }
   .menu-toggle {
     order:4

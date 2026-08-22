@@ -6,21 +6,13 @@ const crypto = require('crypto');
 const { DatabaseSync } = require('node:sqlite');
 const express = require('express');
 const helmet = require('helmet');
-const bcrypt = require('bcryptjs');
-const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 
 const app = express();
 const root = __dirname;
 const dataDir = process.env.VERCEL ? path.join('/tmp', 'cafe-agnolo') : path.join(root, 'data');
 const proofDir = path.join(dataDir, 'proofs');
-const adminEmail = process.env.ADMIN_EMAIL || 'enzousava@gmail.com';
-const sessionSecret = process.env.SESSION_SECRET;
-const adminPassword = process.env.ADMIN_PASSWORD;
-const adminConfigured = Boolean(sessionSecret && adminPassword && adminPassword.length >= 12);
 fs.mkdirSync(proofDir, { recursive: true });
-
-if (!adminConfigured) console.warn('Painel administrativo indisponivel: configure SESSION_SECRET e ADMIN_PASSWORD (minimo de 12 caracteres).');
 
 const database = new DatabaseSync(path.join(dataDir, 'cafe-agnolo.sqlite'));
 database.exec('PRAGMA journal_mode = WAL');
@@ -65,18 +57,6 @@ const seedProducts = database.prepare('INSERT OR IGNORE INTO products (name, siz
   ['Café Outono', '250g', 'R$ 32,90', 'outono.jpeg']
 ].forEach(product => seedProducts.run(...product));
 
-const adminPasswordHash = adminConfigured ? bcrypt.hashSync(adminPassword, 12) : null;
-const allowedStatuses = new Set(['pending', 'confirmed', 'sent', 'cancelled']);
-function sessionSignature(value) { return crypto.createHmac('sha256', sessionSecret || '').update(value).digest('base64url'); }
-function adminCookie(value, maxAge = 8 * 60 * 60) { return `caffe_admin=${value}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`; }
-function hasAdminSession(request) {
-  const token = request.headers.cookie?.match(/(?:^|;\s*)caffe_admin=([^;]+)/)?.[1];
-  if (!token) return false;
-  const [payload, signature] = token.split('.');
-  if (payload !== 'admin' || !signature) return false;
-  const expected = sessionSignature(payload);
-  return signature.length === expected.length && crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
-}
 const upload = multer({
   storage: multer.diskStorage({
     destination: proofDir,
@@ -89,15 +69,9 @@ const upload = multer({
 // //-------------------- MIDDLEWARES E SEGURANCA --------------------
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '100kb' }));
-app.use((request, _response, next) => { request.isAdmin = hasAdminSession(request); next(); });
 app.use((request, response, next) => request.path.startsWith('/server') || request.path.startsWith('/data') ? response.sendStatus(404) : next());
 app.use(express.static(root, { dotfiles: 'deny', index: 'index.html' }));
 
-const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: 'draft-8', legacyHeaders: false });
-function requireAdmin(request, response, next) {
-  if (request.isAdmin) return next();
-  return response.status(401).json({ error: 'AUTH_REQUIRED' });
-}
 function clean(value, max = 300) { return String(value ?? '').trim().slice(0, max); }
 function parseItems(value) {
   if (!Array.isArray(value) || !value.length || value.length > 30) throw new Error('Itens do pedido invalidos.');
@@ -126,46 +100,6 @@ function isValidCpf(value) {
   return digit === Number(digits[10]);
 }
 
-// //-------------------- AUTENTICACAO ADMINISTRATIVA --------------------
-app.get('/admin', (request, response) => {
-  if (request.query.login === '1') response.setHeader('Set-Cookie', adminCookie('', 0));
-  response.sendFile(path.join(root, 'server', 'admin.html'));
-});
-app.post('/admin/login', loginLimiter, async (request, response) => {
-  if (!adminConfigured) return response.status(503).json({ error: 'Painel administrativo nao configurado no servidor.' });
-  const email = clean(request.body.email, 254).toLowerCase();
-  const password = String(request.body.password || '');
-  if (email !== adminEmail.toLowerCase() || !(await bcrypt.compare(password, adminPasswordHash))) return response.status(401).json({ error: 'E-mail ou senha invalidos.' });
-  response.setHeader('Set-Cookie', adminCookie(`admin.${sessionSignature('admin')}`));
-  response.json({ ok: true });
-});
-app.post('/admin/logout', (_request, response) => { response.setHeader('Set-Cookie', adminCookie('', 0)); response.json({ ok: true }); });
-app.get('/admin/api/me', (request, response) => request.isAdmin ? response.json({ ok: true }) : response.sendStatus(401));
-app.get('/admin/api/products', requireAdmin, (_request, response) => response.json({ products: database.prepare('SELECT * FROM products ORDER BY id').all() }));
-// //-------------------- PRODUTOS ADMINISTRATIVOS --------------------
-app.post('/admin/api/products', requireAdmin, (request, response) => {
-  const product = { name: clean(request.body.name, 120), size: clean(request.body.size, 30), price: clean(request.body.price, 30), image: clean(request.body.image, 180) };
-  if (!product.name || !product.size || !product.price) return response.status(400).json({ error: 'Nome, tamanho e preco sao obrigatorios.' });
-  try {
-  const result = database.prepare('INSERT INTO products (name, size, price, image) VALUES (?, ?, ?, ?)').run(product.name, product.size, product.price, product.image || null);
-  response.status(201).json({ product: database.prepare('SELECT * FROM products WHERE id = ?').get(result.lastInsertRowid) });
-  } catch (error) { response.status(400).json({ error: error.code === 'SQLITE_CONSTRAINT_UNIQUE' ? 'Ja existe um produto com esse nome.' : 'Nao foi possivel criar o produto.' }); }
-});
-app.patch('/admin/api/products/:id', requireAdmin, (request, response) => {
-  const product = { name: clean(request.body.name, 120), size: clean(request.body.size, 30), price: clean(request.body.price, 30), image: clean(request.body.image, 180) };
-  if (!product.name || !product.size || !product.price) return response.status(400).json({ error: 'Nome, tamanho e preco sao obrigatorios.' });
-  try {
-    const result = database.prepare('UPDATE products SET name = ?, size = ?, price = ?, image = ? WHERE id = ?').run(product.name, product.size, product.price, product.image || null, Number(request.params.id));
-    if (!result.changes) return response.sendStatus(404);
-    response.json({ product: database.prepare('SELECT * FROM products WHERE id = ?').get(Number(request.params.id)) });
-  } catch (error) { response.status(400).json({ error: error.code === 'SQLITE_CONSTRAINT_UNIQUE' ? 'Ja existe um produto com esse nome.' : 'Nao foi possivel atualizar o produto.' }); }
-});
-app.delete('/admin/api/products/:id', requireAdmin, (request, response) => {
-  const result = database.prepare('DELETE FROM products WHERE id = ?').run(Number(request.params.id));
-  if (!result.changes) return response.sendStatus(404);
-  response.json({ ok: true });
-});
-
 // //-------------------- RECEBIMENTO DE PEDIDOS --------------------
 app.post('/api/orders', upload.single('proof'), (request, response) => {
   let order;
@@ -193,49 +127,6 @@ app.post('/api/orders', upload.single('proof'), (request, response) => {
     if (request.file?.path) fs.rmSync(request.file.path, { force: true });
     response.status(400).json({ error: 'Confira os dados informados e tente novamente.' });
   }
-});
-
-// //-------------------- PEDIDOS E CLIENTES ADMINISTRATIVOS --------------------
-app.get('/admin/api/orders', requireAdmin, (_request, response) => {
-  const rows = database.prepare('SELECT * FROM orders ORDER BY id DESC LIMIT 100').all();
-  const orders = rows.map(row => ({ ...row, customer_address: [row.residence_type, `${row.customer_address}, ${row.address_number}`, row.unit_number ? `Unidade: ${row.unit_number}` : '', row.reference ? `Ref.: ${row.reference}` : ''].filter(Boolean).join(' · '), items: JSON.parse(row.items_json) }));
-  const stats = database.prepare("SELECT COUNT(*) AS total, SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending FROM orders").get();
-  const allOrders = database.prepare('SELECT total, status FROM orders').all();
-  const gross = allOrders.reduce((sum, order) => sum + parseMoney(order.total), 0);
-  const net = allOrders.filter(order => order.status !== 'cancelled').reduce((sum, order) => sum + parseMoney(order.total), 0);
-  response.json({ orders, stats: { total: stats.total, pending: stats.pending || 0, gross, net, revenue: net } });
-});
-app.get('/admin/api/customers', requireAdmin, (_request, response) => {
-  const customers = database.prepare(`
-    SELECT customer_email, MAX(customer_name) AS name, MAX(customer_cpf) AS cpf,
-      MAX(customer_phone) AS phone, MAX(customer_address) AS address,
-      MAX(customer_cep) AS cep, MAX(residence_type) AS residence_type,
-      MAX(address_number) AS address_number, MAX(reference) AS reference,
-      COUNT(*) AS order_count, MAX(created_at) AS last_order
-    FROM orders
-    WHERE customer_email <> ''
-    GROUP BY customer_email
-    ORDER BY last_order DESC
-  `).all();
-  response.json({ customers });
-});
-app.delete('/admin/api/customers/:email', requireAdmin, (request, response) => {
-  const email = clean(request.params.email, 254);
-  const result = database.prepare(`UPDATE orders SET customer_name = 'Cadastro removido', customer_email = '', customer_cpf = '', customer_phone = '', customer_address = '', customer_cep = '', residence_type = '', address_number = '', reference = NULL, unit_number = NULL WHERE customer_email = ?`).run(email);
-  if (!result.changes) return response.sendStatus(404);
-  response.json({ ok: true });
-});
-app.patch('/admin/api/orders/:id', requireAdmin, (request, response) => {
-  const status = clean(request.body.status, 20);
-  if (!allowedStatuses.has(status)) return response.status(400).json({ error: 'Status invalido.' });
-  const result = database.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, Number(request.params.id));
-  if (!result.changes) return response.sendStatus(404);
-  response.json({ ok: true });
-});
-app.get('/admin/api/orders/:id/proof', requireAdmin, (request, response) => {
-  const order = database.prepare('SELECT proof_path, proof_name FROM orders WHERE id = ?').get(Number(request.params.id));
-  if (!order?.proof_path || !fs.existsSync(order.proof_path)) return response.sendStatus(404);
-  response.download(order.proof_path, order.proof_name || 'comprovante');
 });
 
 // //-------------------- INICIALIZACAO --------------------

@@ -33,7 +33,6 @@ const cartTotal = $('#cartTotal');
 const checkoutForm = $('#checkoutForm');
 const profileModal = $('#profileModal');
 const profileTrigger = $('#profileTrigger');
-const adminOrdersLink = $('#adminOrdersLink');
 const mobileProfileTrigger = $('#mobileProfileTrigger');
 const registrationOverlay = $('#registrationOverlay');
 const paymentOverlay = $('#paymentFinalizationOverlay');
@@ -51,11 +50,6 @@ const proofSend = $('#proofSend');
 const partnerCarousel = $('#partnerCarousel');
 const validationOverlay = $('#validationOverlay');
 const validationMessage = $('#validationMessage');
-adminOrdersLink.href = location.protocol === 'file:'
-  ? 'https://cafedellagnolo.com.br/admin?login=1'
-  : location.port === '5500'
-    ? '/server/admin.html?login=1'
-    : '/admin?login=1';
 const residenceType = $('#customerResidenceType');
 const addressNumberField = $('#addressNumberField');
 const addressNumber = $('#customerAddressNumber');
@@ -67,8 +61,6 @@ const customerPhone = $('#customerPhone');
 const customerCpf = $('#customerCpf');
 const residenceSelectButton = $('#residenceSelectButton');
 const residenceOptions = $('#residenceOptions');
-const adminEmail = 'enzousava@gmail.com';
-
 $('#footerYear').textContent = new Date().getFullYear();
 
 // Mantém a rolagem do fundo travada enquanto qualquer painel/modal está aberto,
@@ -225,11 +217,9 @@ function renderCart() {
 function updateAccount() {
   const customer = getCustomer();
   const firstName = customer?.name?.trim().split(/\s+/)[0];
-  const hasAdminEmail = customer?.email?.trim().toLowerCase() === adminEmail;
   const label = firstName ? `Olá, ${firstName}` : 'Log-in';
   profileTrigger.textContent = label;
   profileTrigger.setAttribute('aria-label', firstName ? 'Abrir perfil' : 'Fazer login ou cadastro');
-  adminOrdersLink.hidden = !hasAdminEmail;
   if (mobileProfileTrigger) {
     mobileProfileTrigger.textContent = firstName ? `Olá, ${firstName}` : 'Entrar / Cadastrar';
   }
@@ -459,6 +449,3 @@ $$('a[href^="#"]').forEach(link => link.addEventListener('click', event => {
 if ('IntersectionObserver' in window) { const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: .12 }); $$('.reveal').forEach(element => observer.observe(element)); } else $$('.reveal').forEach(element => element.classList.add('is-visible'));
 
 renderCart(); updateAccount();
-fetch('/admin/api/me', { credentials: 'same-origin' })
-  .then(response => { if (response.ok) adminOrdersLink.hidden = false; })
-  .catch(() => {});
