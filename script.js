@@ -54,6 +54,7 @@ const productDetailPrice = $('#productDetailPrice');
 const productDetailOldPrice = $('#productDetailOldPrice');
 const productDetailBuy = $('#productDetailBuy');
 const productDetailAdd = $('#productDetailAdd');
+const productSuggestions = $('#productSuggestions');
 let selectedProductCard = null;
 const validationOverlay = $('#validationOverlay');
 const validationMessage = $('#validationMessage');
@@ -351,6 +352,16 @@ function openProductDetail(card) {
   productDetailFeatures.textContent = productFeatures[productDetailName.textContent] || productDetailDescription.textContent;
   productDetailPrice.textContent = $('.price', card).textContent.trim();
   productDetailOldPrice.textContent = $('.old-price', card).textContent.trim();
+  productSuggestions.replaceChildren();
+  $$('.produto-card').filter(otherCard => otherCard !== card).forEach(otherCard => {
+    const suggestion = document.createElement('button');
+    suggestion.className = 'product-suggestion';
+    suggestion.type = 'button';
+    suggestion.dataset.productName = $('h3', otherCard).textContent.trim();
+    suggestion.setAttribute('aria-label', `Ver detalhes de ${suggestion.dataset.productName}`);
+    suggestion.innerHTML = `<img src="${$('.produto-image', otherCard).src}" alt=""><span>${$('.product-kind', otherCard).textContent.trim()}<strong>${suggestion.dataset.productName}</strong></span>`;
+    productSuggestions.append(suggestion);
+  });
   setOverlay(productDetailOverlay, true);
 }
 $$('.product-open').forEach(imageArea => {
@@ -363,6 +374,12 @@ $('#productDetailClose').addEventListener('click', () => setOverlay(productDetai
 productDetailOverlay.addEventListener('click', event => { if (event.target === productDetailOverlay) setOverlay(productDetailOverlay, false); });
 productDetailBuy.addEventListener('click', () => { setOverlay(productDetailOverlay, false); addProduct(selectedProductCard, true); });
 productDetailAdd.addEventListener('click', () => { addProduct(selectedProductCard); setOverlay(productDetailOverlay, false); });
+productSuggestions.addEventListener('click', event => {
+  const suggestion = event.target.closest('.product-suggestion');
+  if (!suggestion) return;
+  const card = $$('.produto-card').find(item => $('h3', item).textContent.trim() === suggestion.dataset.productName);
+  if (card) openProductDetail(card);
+});
 $$('.buy-now').forEach(button => button.addEventListener('click', () => addProduct(button.closest('.produto-card'), true)));
 
 cartItems.addEventListener('click', event => {
@@ -418,10 +435,7 @@ checkoutForm.addEventListener('submit', async event => {
   formCustomer.phone = formatBrazilPhone(formCustomer.phone);
   formCustomer.cpf = formatCpf(formCustomer.cpf);
   const savedCustomer = storage.get('customer', null);
-  if (!savedCustomer) {
-    const shouldSave = window.confirm('Deseja salvar seus dados neste dispositivo para não precisar preenchê-los novamente?');
-    if (shouldSave) storage.set('customer', formCustomer);
-  } else storage.set('customer', formCustomer);
+  if (savedCustomer) storage.set('customer', formCustomer);
   customer = formCustomer; updateAccount(); setOverlay(registrationOverlay, false);
   if (registrationOnly) { openProfile(); showToast('Login realizado com sucesso.'); return; }
   $('#cartCheckout').click();

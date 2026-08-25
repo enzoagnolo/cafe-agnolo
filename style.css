@@ -532,6 +532,13 @@ h1 em,h2 em {
   margin-bottom:15px;
   min-height:39px
 }
+.product-more-hint {
+  margin:0;
+  color:var(--clay);
+  font:9px var(--mono);
+  letter-spacing:.08em;
+  text-transform:uppercase
+}
 .produto-toggle {
   background:transparent;
   border:0;
@@ -579,22 +586,28 @@ h1 em,h2 em {
   margin-left:4px
 }
 .produto-card .buy-now {
-  display:none
+  display:inline-flex;
+  align-items:center
 }
 .product-detail-overlay {
   z-index:45
 }
 .product-detail-modal {
-  width:min(980px,100%);
-  min-height:min(680px,92vh);
+  width:100%;
+  min-height:100%;
+  min-height:100dvh;
   background:var(--paper);
-  box-shadow:0 18px 60px rgba(0,0,0,.24);
-  margin:auto
+  margin:0
 }
 .product-detail-header {
   display:flex;
   align-items:center;
   justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:rgba(245,241,233,.94);
+  backdrop-filter:blur(12px);
   min-height:72px;
   padding:0 clamp(22px,4vw,48px);
   border-bottom:1px solid var(--line)
@@ -665,6 +678,70 @@ h1 em,h2 em {
 .product-detail-actions {
   display:grid;
   gap:10px
+}
+.product-detail-carousel {
+  padding:clamp(28px,5vw,58px) clamp(22px,5vw,58px) clamp(58px,8vw,100px);
+  border-top:1px solid var(--line)
+}
+.product-detail-carousel-heading {
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:24px
+}
+.product-detail-carousel-heading .eyebrow {
+  margin:0
+}
+.product-detail-carousel-heading h3 {
+  margin:0;
+  font:600 clamp(25px,3vw,38px)/1 var(--serif);
+  letter-spacing:-.05em
+}
+.product-suggestions {
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(210px,260px);
+  gap:14px;
+  overflow-x:auto;
+  padding-bottom:10px;
+  overscroll-behavior-x:contain;
+  scrollbar-color:var(--clay) transparent;
+  scrollbar-width:thin
+}
+.product-suggestion {
+  display:grid;
+  grid-template-columns:72px 1fr;
+  gap:12px;
+  align-items:center;
+  min-height:94px;
+  padding:10px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--ink);
+  text-align:left;
+  transition:background .2s,transform .2s
+}
+.product-suggestion:hover,.product-suggestion:focus-visible {
+  background:var(--cream);
+  transform:translateY(-2px)
+}
+.product-suggestion img {
+  width:72px;
+  height:72px;
+  object-fit:cover
+}
+.product-suggestion span {
+  display:block;
+  color:var(--muted);
+  font:9px var(--mono);
+  line-height:1.4;
+  text-transform:uppercase
+}
+.product-suggestion strong {
+  display:block;
+  margin-top:7px;
+  font:600 17px/1.05 var(--serif)
 }
 /* //-------------------- PARCEIROS E RODAPE -------------------- */
 .partners {
@@ -1044,6 +1121,12 @@ h1 em,h2 em {
   padding:20px;
   backdrop-filter:blur(4px);
   overflow-y:auto
+}
+.product-detail-overlay {
+  padding:0;
+  background:var(--paper);
+  backdrop-filter:none;
+  place-items:stretch
 }
 .modal-card {
   width:min(560px,100%);
